@@ -12,6 +12,11 @@ in vec2 in_vert;
 out vec2 v_uv;
 out vec2 v_world_pos;
 
+uniform sampler2D islandTexture;
+uniform int numIslands;
+uniform float islandPositions[10];
+uniform float islandSize;
+
 uniform vec2 viewportSize;
 uniform vec2 cameraPos;
 
@@ -26,13 +31,17 @@ fragment_shader = '''
 #version 330
 precision highp float;
 
+
+uniform sampler2D islandTexture;
+uniform int numIslands;
+uniform float islandPositions[10];
+uniform float islandSize;
 uniform float time;
 uniform vec2 boatPosition;
 uniform float boatRotation;
 uniform vec2 boatVelocity;
 uniform float wakeFade;
 uniform sampler2D boatTexture;
-uniform sampler2D enemyTexture;
 uniform int numOtherPlayers;
 uniform float otherBoatPositions[20];
 uniform float otherBoatRotations[10];
@@ -224,9 +233,21 @@ void main() {
     float specular = pow(max(0.0, waves - 0.65), 4.0) * 0.35;
     waterColor += vec3(specular);
 
+    for (int i = 0; i < numIslands; i++) {
+    int idx = i * 2;
+    vec2 islandPos = vec2(islandPositions[idx], islandPositions[idx+1]);
+    vec2 islandUV = (v_world_pos - islandPos) / islandSize + 0.5;
+    if (islandUV.x >= 0.0 && islandUV.x <= 1.0 && islandUV.y >= 0.0 && islandUV.y <= 1.0) {
+        vec4 islandColor = texture(islandTexture, islandUV);
+        if (islandColor.a > 0.05) {
+            waterColor = mix(waterColor, islandColor.rgb, islandColor.a);
+        }
+    }
+}
+
     // Add boundary visualization
     float distFromBoundary = getDistanceFromBoundary(v_world_pos, worldSize);
-    
+
     if (distFromBoundary < BORDER_WIDTH) {
         float borderIntensity = smoothstep(BORDER_WIDTH, 0.0, distFromBoundary);
         float pulse = sin(time * 3.0) * 0.3 + 0.7;
@@ -234,13 +255,13 @@ void main() {
         vec3 warningColor = vec3(0.9, 0.4, 0.2);
         vec3 edgeColor = mix(warningColor, boundaryColor, borderIntensity);
         waterColor = mix(waterColor, edgeColor, borderIntensity * 0.6 * pulse);
-        
+
         if (distFromBoundary < BORDER_WIDTH * 0.5) {
             float stripePattern = step(0.5, fract(distFromBoundary * 15.0 + time * 2.0));
             waterColor = mix(waterColor, vec3(1.0, 0.2, 0.1), stripePattern * borderIntensity * 0.4);
         }
     }
-    
+
     if (distFromBoundary < BORDER_WIDTH + BORDER_FADE) {
         float fadeIntensity = smoothstep(BORDER_WIDTH + BORDER_FADE, BORDER_WIDTH, distFromBoundary);
         waterColor = mix(waterColor, vec3(0.9, 0.4, 0.2) * 0.6, fadeIntensity * 0.2);
@@ -266,13 +287,10 @@ void main() {
         othUV = rotate2D(othUV, -othRot);
         vec2 othTex = vec2(othUV.x / (BOAT_SIZE * boatAspect), othUV.y / BOAT_SIZE) + 0.5;
         if (othTex.x >= 0.0 && othTex.x <= 1.0 && othTex.y >= 0.0 && othTex.y <= 1.0) {
-            // sample enemy texture for other boats and composite fully opaque (no transparency)
-            vec4 oc = texture(enemyTexture, othTex);
-            // only apply if there's visible texel (alpha > small threshold)
+            vec4 oc = texture(boatTexture, othTex);
             if (oc.a > 0.05) {
-                vec3 tint = vec3(1.0, 1.0, 1.0);
-                // replace water color with boat color where boat is present
-                waterColor = mix(waterColor, oc.rgb * tint, 1.0);
+                vec3 tint = vec3(1.05, 0.95, 0.95);
+                waterColor = mix(waterColor, oc.rgb * tint, oc.a * 0.75);
             }
         }
     }
@@ -285,24 +303,26 @@ void main() {
 class Renderer:
     def __init__(self, ctx):
         self.ctx = ctx
-        #changed aspect ratio to make map bigger - seems like a good size???
+        # changed aspect ratio to make map bigger - seems like a good size???
         self.viewport_width = 2.3
         self.viewport_height = 1.3
-
+        self._load_island_texture()
         self._load_boat_texture()
         self._compile_shaders()
         self._create_geometry()
+
     def world_to_screen(self, world_x, world_y, camera_x, camera_y, screen_width, screen_height):
         rel_x = world_x - camera_x
         rel_y = world_y - camera_y
-        #conver to screen space
+        # conver to screen space
         screen_x = (rel_x / self.viewport_width) * screen_width + screen_width / 2.0
         screen_y = screen_height / 2 - (rel_y / self.viewport_height) * screen_height
 
         return screen_x, screen_y
+
     def _load_boat_texture(self):
         try:
-            boat_image = pygame.image.load("../Graphics/Sprites/Boats/player.png").convert_alpha()
+            boat_image = pygame.image.load("../Graphics/Sprites/Boats/Player/player.png").convert_alpha()
             self.boat_width, self.boat_height = boat_image.get_size()
             self.boat_aspect = float(self.boat_width) / float(self.boat_height) if self.boat_height else 1.0
             boat_data = pygame.image.tobytes(boat_image, "RGBA", True)
@@ -319,39 +339,34 @@ class Renderer:
         self.boat_texture = self.ctx.texture((self.boat_width, self.boat_height), 4, boat_data)
         self.boat_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
 
-        # load enemy texture (used for other players)
+    def _load_island_texture(self):
         try:
-            enemy_image = pygame.image.load("../Graphics/Sprites/Boats/enemy.png").convert_alpha()
-            ew, eh = enemy_image.get_size()
-            enemy_data = pygame.image.tobytes(enemy_image, "RGBA", True)
-            self.enemy_width, self.enemy_height = ew, eh
-            self.enemy_aspect = float(ew) / float(eh) if eh else 1.0
+            island_image = pygame.image.load("../Graphics/Sprites/Environment/island.png").convert_alpha()
+            self.island_width, self.island_height = island_image.get_size()
+            island_data = pygame.image.tobytes(island_image, "RGBA", True)
+            print(f"Loaded island.png ({self.island_width}x{self.island_height})")
         except Exception:
-            # fallback to boat texture if enemy not found
-            enemy_data = boat_data
-            self.enemy_width, self.enemy_height = self.boat_width, self.boat_height
-            self.enemy_aspect = getattr(self, 'boat_aspect', 1.0)
+            print("island.png not found ill just make a new one")
+            self.island_width, self.island_height = 64, 64
+            surf = pygame.Surface((self.island_width, self.island_height), pygame.SRCALPHA)
+            pygame.draw.circle(surf, (34, 139, 34), (32, 32), 30)
+            pygame.draw.circle(surf, (139, 69, 19), (32, 32), 20)
+            island_data = pygame.image.tobytes(surf, "RGBA", True)
 
-        self.enemy_texture = self.ctx.texture((self.enemy_width, self.enemy_height), 4, enemy_data)
-        self.enemy_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+        self.island_texture = self.ctx.texture((self.island_width, self.island_height), 4, island_data)
+        self.island_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
 
     def _compile_shaders(self):
         self.program = self.ctx.program(vertex_shader=vertex_shader, fragment_shader=fragment_shader)
-        # bind textures: player boat -> unit 0, enemy boat -> unit 1
         self.boat_texture.use(location=0)
-        self.enemy_texture.use(location=1)
         self.program['boatTexture'].value = 0
-        try:
-            self.program['enemyTexture'].value = 1
-        except Exception:
-            pass
+
+        self.island_texture.use(location=1)
+        self.program['islandTexture'].value = 1
+
         # Pass boat aspect ratio to shader to avoid width distortion
         try:
             self.program['boatAspect'].value = float(getattr(self, 'boat_aspect', 1.0))
-        except Exception:
-            pass
-        try:
-            self.program['enemyAspect'].value = float(getattr(self, 'enemy_aspect', 1.0))
         except Exception:
             pass
 
@@ -362,7 +377,7 @@ class Renderer:
 
     def render(self, time, player, other_players_display):
         from config import WORLD_WIDTH, WORLD_HEIGHT
-        
+
         self.program['time'].value = float(time)
         self.program['boatPosition'].value = (float(player.x), float(player.y))
         self.program['boatRotation'].value = float(player.rotation)
@@ -371,7 +386,6 @@ class Renderer:
         self.program['cameraPos'].value = (float(player.camera_x), float(player.camera_y))
         self.program['viewportSize'].value = (float(self.viewport_width), float(self.viewport_height))
         self.program['worldSize'].value = (float(WORLD_WIDTH), float(WORLD_HEIGHT))
-
 
         display_list = list(other_players_display.values())[:10]
         num_other = len(display_list)
@@ -406,6 +420,24 @@ class Renderer:
                 self.program['otherBoatSwayAmps'].value = tuple(sway_amp_array.tolist())
             except Exception:
                 pass
+
+            from config import ISLAND_POSITIONS, ISLAND_SIZE
+
+            island_array = np.zeros(10, dtype='f4')
+            for idx, pos in enumerate(ISLAND_POSITIONS[:5]):
+                island_array[idx * 2 + 0] = float(pos[0])
+                island_array[idx * 2 + 1] = float(pos[1])
+
+            self.program['numIslands'].value = len(ISLAND_POSITIONS)
+            self.program['islandSize'].value = float(ISLAND_SIZE)
+
+            try:
+                self.program.get("islandPositions").write(island_array.tobytes())
+            except Exception:
+                try:
+                    self.program['islandPositions'].value = tuple(island_array.tolist())
+                except Exception:
+                    pass
 
         self.ctx.clear(0.0, 0.35, 0.75)
         self.vao.render(mode=moderngl.TRIANGLE_STRIP)
