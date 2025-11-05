@@ -31,7 +31,7 @@ Start typing overview
 
 The text-based game has the following structure:  
 ├── main.py&emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp; &emsp;Python file of the game.  
-├── You can continue...
+├── You can continue...  
 └── ReadME.md&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp; This documentation file you are reading right now.  
 
 ## Logic <a name="logic"></a>
