@@ -16,12 +16,3 @@ WORLD_HEIGHT = 15
 
 SUPABASE_URL = "https://ciuqcdaowlwztlzkanpq.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpdXFjZGFvd2x3enRsemthbnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MTYxMjUsImV4cCI6MjA3NzQ5MjEyNX0.WdoFmiZTRZbkTlnNISPTbkcDTFWDv75QEFsKNs7zkeY"
-
-ISLAND_POSITIONS = [
-    (3.0, 3.0),
-    (12.0, 3.0),
-    (3.0, 12.0),
-    (12.0, 12.0),
-    (7.5, 7.5)
-]
-ISLAND_SIZE = 1.5
