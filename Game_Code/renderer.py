@@ -32,6 +32,7 @@ uniform float boatRotation;
 uniform vec2 boatVelocity;
 uniform float wakeFade;
 uniform sampler2D boatTexture;
+uniform sampler2D enemyTexture;
 uniform int numOtherPlayers;
 uniform float otherBoatPositions[20];
 uniform float otherBoatRotations[10];
@@ -265,10 +266,13 @@ void main() {
         othUV = rotate2D(othUV, -othRot);
         vec2 othTex = vec2(othUV.x / (BOAT_SIZE * boatAspect), othUV.y / BOAT_SIZE) + 0.5;
         if (othTex.x >= 0.0 && othTex.x <= 1.0 && othTex.y >= 0.0 && othTex.y <= 1.0) {
-            vec4 oc = texture(boatTexture, othTex);
+            // sample enemy texture for other boats and composite fully opaque (no transparency)
+            vec4 oc = texture(enemyTexture, othTex);
+            // only apply if there's visible texel (alpha > small threshold)
             if (oc.a > 0.05) {
-                vec3 tint = vec3(1.05, 0.95, 0.95);
-                waterColor = mix(waterColor, oc.rgb * tint, oc.a * 0.75);
+                vec3 tint = vec3(1.0, 1.0, 1.0);
+                // replace water color with boat color where boat is present
+                waterColor = mix(waterColor, oc.rgb * tint, 1.0);
             }
         }
     }
@@ -315,13 +319,39 @@ class Renderer:
         self.boat_texture = self.ctx.texture((self.boat_width, self.boat_height), 4, boat_data)
         self.boat_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
 
+        # load enemy texture (used for other players)
+        try:
+            enemy_image = pygame.image.load("../Graphics/Sprites/Boats/enemy.png").convert_alpha()
+            ew, eh = enemy_image.get_size()
+            enemy_data = pygame.image.tobytes(enemy_image, "RGBA", True)
+            self.enemy_width, self.enemy_height = ew, eh
+            self.enemy_aspect = float(ew) / float(eh) if eh else 1.0
+        except Exception:
+            # fallback to boat texture if enemy not found
+            enemy_data = boat_data
+            self.enemy_width, self.enemy_height = self.boat_width, self.boat_height
+            self.enemy_aspect = getattr(self, 'boat_aspect', 1.0)
+
+        self.enemy_texture = self.ctx.texture((self.enemy_width, self.enemy_height), 4, enemy_data)
+        self.enemy_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+
     def _compile_shaders(self):
         self.program = self.ctx.program(vertex_shader=vertex_shader, fragment_shader=fragment_shader)
+        # bind textures: player boat -> unit 0, enemy boat -> unit 1
         self.boat_texture.use(location=0)
+        self.enemy_texture.use(location=1)
         self.program['boatTexture'].value = 0
+        try:
+            self.program['enemyTexture'].value = 1
+        except Exception:
+            pass
         # Pass boat aspect ratio to shader to avoid width distortion
         try:
             self.program['boatAspect'].value = float(getattr(self, 'boat_aspect', 1.0))
+        except Exception:
+            pass
+        try:
+            self.program['enemyAspect'].value = float(getattr(self, 'enemy_aspect', 1.0))
         except Exception:
             pass
 
