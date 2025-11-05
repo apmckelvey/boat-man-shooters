@@ -4,6 +4,7 @@ import pygame
 import moderngl
 import numpy as np
 import pygame
+import pygame.freetype
 
 vertex_shader = '''
 #version 330 core
@@ -292,6 +293,8 @@ class Renderer:
         self._load_boat_texture()
         self._compile_shaders()
         self._create_geometry()
+        # overlay resources (for UI text rendered via pygame -> GL texture)
+        self._create_overlay_resources()
     def world_to_screen(self, world_x, world_y, camera_x, camera_y, screen_width, screen_height):
         rel_x = world_x - camera_x
         rel_y = world_y - camera_y
@@ -360,6 +363,51 @@ class Renderer:
         vbo = self.ctx.buffer(vertices.tobytes())
         self.vao = self.ctx.simple_vertex_array(self.program, vbo, 'in_vert')
 
+    def _create_overlay_resources(self):
+        # simple textured quad program for overlays
+        overlay_vertex = '''
+#version 330 core
+in vec2 in_vert;
+out vec2 v_uv;
+void main() {
+    v_uv = in_vert * 0.5 + 0.5;
+    gl_Position = vec4(in_vert, 0.0, 1.0);
+}
+'''
+
+        overlay_fragment = '''
+#version 330 core
+precision highp float;
+in vec2 v_uv;
+out vec4 fragColor;
+uniform sampler2D overlayTexture;
+void main() {
+    vec4 c = texture(overlayTexture, v_uv);
+    fragColor = c;
+}
+'''
+
+        try:
+            self.overlay_program = self.ctx.program(vertex_shader=overlay_vertex, fragment_shader=overlay_fragment)
+            # reuse same full-screen vbo as the main pass
+            # create a simple vao for overlay
+            vertices = np.array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0], dtype='f4')
+            vbo = self.ctx.buffer(vertices.tobytes())
+            self.overlay_vao = self.ctx.simple_vertex_array(self.overlay_program, vbo, 'in_vert')
+        except Exception:
+            self.overlay_program = None
+            self.overlay_vao = None
+
+        self.overlay_texture = None
+        # initialize pygame freetype for rendering text to surface
+        try:
+            pygame.freetype.init()
+            self.overlay_font_large = pygame.freetype.SysFont(None, 84)
+            self.overlay_font_small = pygame.freetype.SysFont(None, 36)
+        except Exception:
+            self.overlay_font_large = None
+            self.overlay_font_small = None
+
     def render(self, time, player, other_players_display):
         from config import WORLD_WIDTH, WORLD_HEIGHT
         
@@ -409,3 +457,68 @@ class Renderer:
 
         self.ctx.clear(0.0, 0.35, 0.75)
         self.vao.render(mode=moderngl.TRIANGLE_STRIP)
+
+    def draw_overlay(self, main_text: str, sub_text: str = "", alpha: float = 1.0):
+        """Render a fullscreen overlay by drawing text into a pygame surface,
+        uploading it as a texture and drawing a textured quad on top of the scene.
+        """
+        # ensure overlay program exists
+        if not getattr(self, 'overlay_program', None) or not getattr(self, 'overlay_vao', None):
+            return
+
+        # import sizes from config
+        try:
+            from config import WIDTH, HEIGHT
+        except Exception:
+            WIDTH, HEIGHT = 1280, 720
+
+        # create an RGBA surface
+        surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA, 32)
+        surf = surf.convert_alpha()
+
+        # draw semi-transparent dark background
+        bg = (0, 0, 0, int(180 * alpha))
+        surf.fill(bg)
+
+        # render text
+        if self.overlay_font_large:
+            # center main text
+            text_surf, _ = self.overlay_font_large.render(main_text, (255, 50, 50))
+            tw, th = text_surf.get_size()
+            surf.blit(text_surf, text_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
+
+        if sub_text and self.overlay_font_small:
+            sub_surf, _ = self.overlay_font_small.render(sub_text, (230, 230, 230))
+            surf.blit(sub_surf, sub_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 70)))
+
+        # upload to GPU as texture
+        data = pygame.image.tostring(surf, 'RGBA', True)
+        w, h = surf.get_size()
+
+        # create or write texture
+        try:
+            if self.overlay_texture is None:
+                self.overlay_texture = self.ctx.texture((w, h), 4, data)
+                self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+            else:
+                # update existing texture
+                try:
+                    self.overlay_texture.write(data)
+                except Exception:
+                    # fallback to recreate
+                    self.overlay_texture.release()
+                    self.overlay_texture = self.ctx.texture((w, h), 4, data)
+                    self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+
+            self.overlay_texture.use(location=2)
+            try:
+                self.overlay_program['overlayTexture'].value = 2
+            except Exception:
+                pass
+
+            # enable blending and draw overlay quad
+            self.ctx.enable(moderngl.BLEND)
+            self.overlay_vao.render(mode=moderngl.TRIANGLE_STRIP)
+            # leaving blending state as-is
+        except Exception:
+            return

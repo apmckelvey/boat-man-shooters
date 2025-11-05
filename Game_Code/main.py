@@ -20,7 +20,6 @@ pygame.display.set_caption("Boat Man Shooters")
 clock = pygame.time.Clock()
 
 # large font for overlay messages
-font = pygame.font.SysFont(None, 84)
 
 ctx = moderngl.create_context()
 print("OpenGL context created")
@@ -66,18 +65,12 @@ async def main():
             if visible:
                 text = "DISCONNECTED FROM SERVER"
                 subtext = "Attempting to reconnect..."
-                # render main text and a blackout outline by drawing offsets
-                txt_surf = font.render(text, True, (255, 50, 50))
-                outline_surf = font.render(text, True, (0, 0, 0))
-                rect = txt_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-                # draw outline offsets for a simple border
-                for ox, oy in [(-3, -3), (-3, 3), (3, -3), (3, 3)]:
-                    screen.blit(outline_surf, outline_surf.get_rect(center=(WIDTH // 2 + ox, HEIGHT // 2 + oy)))
-                screen.blit(txt_surf, rect)
-
-                subfont = pygame.font.SysFont(None, 36)
-                sub_surf = subfont.render(subtext, True, (230, 230, 230))
-                screen.blit(sub_surf, sub_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 70)))
+                # draw overlay using the moderngl-backed renderer so it appears on OpenGL surface
+                try:
+                    renderer.draw_overlay(text, subtext)
+                except Exception:
+                    # fallback: nothing
+                    pass
 
         pygame.display.flip()
         clock.tick(TARGET_FPS)
