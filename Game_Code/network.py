@@ -73,8 +73,6 @@ class NetworkManager:
                                         "target": {"x": px, "y": py, "rot": prot, "vx": 0.0, "vy": 0.0, "vrot": 0.0},
                                         "history": []
                                     }
-                                else:
-                                    self.other_players[pid]["name"] = pname
 
                                 hist = self.other_players[pid]["history"]
                                 hist.append({"x": px, "y": py, "rot": prot, "ts": ts})
