@@ -54,7 +54,7 @@ print("Code block!")
 
 ## Installation of Dependencies <a name="installation_of_dependencies">
 
-This project uses `dependency`, which are not built in to the Python system. To install these dependencies, you will have to use pip in your terminal if you are in a local environment.
+This project uses the dependencies `pygame`, `moderngl`, `numpy`, and `supabase`, which are not built in to the Python system. To install these dependencies, you will have to use pip in your terminal if you are in a local environment.
 
 1. ### Install `pip` if Needed
    1. First, get the `get-pip.py` file from the following link: <ul> `https://bootstrap.pypa.io/get-pip.py` </ul>
@@ -67,19 +67,25 @@ python3 get-pip.py
 > *NOTE:* Replace *"/Directory/to/get-pip.py"* with the actual directory to `get-pip.py`
 
 2. ### Get Dependencies
-Run the following in your terminal to install the dependencies using `pip`.
+Run the following commands in your terminal to install the dependencies using `pip`.
 
 ```Bash
-pip install <dependency>
+pip install pygame
+pip install moderngl
+pip install numpy
+pip install supabase
 ```
 
-If that did not work, you can alternatively try:
+If that did not work, you can alternatively try these following commands:
 
 ```Bash
-pip3 install <dependency>
+pip3 install pygame
+pip3 install moderngl
+pip3 install numpy
+pip3 install supabase
 ```
 
-> ***NOTE:*** These directions is assuming you are running Python verison 3 or higher.
+> ***NOTE:*** These directions are assuming you are running Python verison 3 or higher.
 
 ## How to Run <a name="how_to_run"></a>
 
