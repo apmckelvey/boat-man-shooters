@@ -1,6 +1,6 @@
 <h1 align = center> Welcome to Boat Man Shooters 👋</h1>
 <p align="center">
-  <img height="75%" width="75%" src="/Logos/logo.png">
+  <img height="50%" width="50%" src="/Logos/logo.png">
 </p>
 
 ## Table of Contents
