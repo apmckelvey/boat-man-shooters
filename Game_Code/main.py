@@ -72,24 +72,7 @@ async def main():
                 running = False
 
         keys = pygame.key.get_pressed()
-        
-        # Handle controller input
-        if controller_joystick:
-            # Right stick for rotation
-            rotation_value = -controller_joystick.get_axis(2)  # Right stick X-axis
-            # Left stick for movement
-            movement_value = -controller_joystick.get_axis(1)  # Left stick Y-axis
-            
-            # D-pad
-            dpad_x = controller_joystick.get_hat(0)[0]  # -1 for left, 1 for right
-            dpad_y = controller_joystick.get_hat(0)[1]  # -1 for down, 1 for up
-        else:
-            rotation_value = 0
-            movement_value = 0
-            dpad_x = 0
-            dpad_y = 0
-            
-        player.update(dt, keys, rotation_value, movement_value, dpad_x, dpad_y)
+        player.update(dt, keys, controller_joystick)
 
         prediction.update_predictions(dt, network.other_players)
 
