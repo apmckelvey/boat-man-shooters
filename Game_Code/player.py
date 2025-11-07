@@ -30,7 +30,7 @@ class Player:
         self.previous_x = x
         self.previous_y = y
 
-    def update(self, dt, keys, rotation_value=0, movement_value=0, dpad_x=0, dpad_y=0):
+    def update(self, dt, keys, controller=None):
         import pygame
         from config import WORLD_WIDTH, WORLD_HEIGHT
 
@@ -41,10 +41,24 @@ class Player:
             self.target_rotation -= self.rotation_speed * dt
 
         # Controller input for rotation (right stick or d-pad)
-        if abs(rotation_value) > 0.1:  # Dead zone
-            self.target_rotation -= rotation_value * self.rotation_speed * dt
-        if dpad_x != 0:
-            self.target_rotation -= dpad_x * self.rotation_speed * dt
+        # Read controller axes/hats defensively since some controllers may not have the same layout
+        if controller is not None:
+            try:
+                raw_rotation = controller.get_axis(2)
+            except Exception:
+                raw_rotation = 0.0
+            rotation_value = -raw_rotation if raw_rotation is not None else 0.0
+
+            try:
+                dpad_x = controller.get_hat(0)[0]
+            except Exception:
+                dpad_x = 0
+
+            # Apply rotation with dead zone
+            if abs(rotation_value) > 0.1:
+                self.target_rotation -= rotation_value * self.rotation_speed * dt
+            if dpad_x != 0:
+                self.target_rotation -= dpad_x * self.rotation_speed * dt
 
         self.rotation = lerp_angle(self.rotation, self.target_rotation, self.rotation_smoothing)
         self.rotation %= (2 * math.pi)
@@ -52,18 +66,43 @@ class Player:
 
         self.previous_x, self.previous_y = self.x, self.y
 
+        # Initialize movement input
+        movement_input = 0.0
+
         # Keyboard controls
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            self.target_velocity = 1.0
+            movement_input = 1.0
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            self.target_velocity = -3
-        # Controller input for movement (left stick or d-pad)
-        elif abs(movement_value) > 0.1:  # Dead zone
-            self.target_velocity = movement_value
-        elif dpad_y != 0:
-            self.target_velocity = dpad_y
-        else:
-            self.target_velocity = 0.0
+            movement_input = -3.0
+
+        # Controller input for movement (if controller is connected)
+        if controller is not None:
+            try:
+                raw_stick = controller.get_axis(1)
+            except Exception:
+                raw_stick = 0.0
+            stick_value = -raw_stick if raw_stick is not None else 0.0
+
+            # Stick: map to same keyboard rates with dead zone
+            if abs(stick_value) > 0.1:
+                if stick_value > 0:
+                    movement_input = stick_value * 1.0
+                else:
+                    movement_input = stick_value * 3.0
+
+            # D-pad: only used if stick not engaged
+            if abs(stick_value) <= 0.1:
+                try:
+                    dpad_y = controller.get_hat(0)[1]
+                except Exception:
+                    dpad_y = 0
+                if dpad_y > 0:
+                    movement_input = 1.0
+                elif dpad_y < 0:
+                    movement_input = -3.0
+
+        # Apply the movement input
+        self.target_velocity = movement_input
 
         if self.target_velocity > self.current_velocity:
             self.current_velocity = min(self.current_velocity + self.acceleration * dt, self.target_velocity)
