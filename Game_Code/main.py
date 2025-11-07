@@ -55,6 +55,19 @@ async def main():
 
         current_time = (pygame.time.get_ticks() - start_ticks) / 1000.0
         renderer.render(current_time, player, prediction.other_players_display)
+        # draw small rectangles above players (local + others) with names
+        try:
+            # build names mapping: 'local' -> local player name, other pid -> stored name if available
+            names = {'local': getattr(network, 'PLAYER_NAME', 'You')}
+            try:
+                for pid, pdata in network.other_players.items():
+                    names[pid] = pdata.get('name')
+            except Exception:
+                pass
+
+            renderer.draw_player_nametags(player, prediction.other_players_display, names=names)
+        except Exception:
+            pass
 
         # Draw disconnect overlay if network reports disconnected
         disconnected = not getattr(network, 'connected', True)

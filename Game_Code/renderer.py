@@ -5,6 +5,7 @@ import moderngl
 import numpy as np
 import pygame
 import pygame.freetype
+import os
 
 vertex_shader = '''
 #version 330 core
@@ -402,11 +403,48 @@ void main() {
         # initialize pygame freetype for rendering text to surface
         try:
             pygame.freetype.init()
-            self.overlay_font_large = pygame.freetype.SysFont(None, 63)  # smaller size
-            self.overlay_font_small = pygame.freetype.SysFont(None, 27)  # smaller size
+            # Try a bundled TTF first (so DynaPuff looks identical across platforms if provided)
+            font_paths = [
+                # project-specific path you mentioned
+                os.path.join(os.path.dirname(__file__), "..", "Graphics", "Fonts", "DynaPuffFont.ttf"),
+                os.path.join(os.path.dirname(__file__), "..", "DynaPuffFont.ttf"),
+                os.path.join(os.getcwd(), "Graphics", "Fonts", "DynaPuffFont.ttf"),
+                os.path.join(os.getcwd(), "DynaPuffFont.ttf"),
+            ]
+
+            found_ttf = None
+            for p in font_paths:
+                try:
+                    if os.path.exists(p):
+                        found_ttf = p
+                        break
+                except Exception:
+                    continue
+
+            if found_ttf:
+                try:
+                    self.overlay_font_large = pygame.freetype.Font(found_ttf, 63)
+                    self.overlay_font_small = pygame.freetype.Font(found_ttf, 27)
+                    self.nametag_font = pygame.freetype.Font(found_ttf, 18)
+                except Exception:
+                    # fallback to SysFont lookup
+                    self.overlay_font_large = pygame.freetype.SysFont("DynaPuff", 63)
+                    self.overlay_font_small = pygame.freetype.SysFont("DynaPuff", 27)
+                    self.nametag_font = pygame.freetype.SysFont("DynaPuff", 18)
+            else:
+                # Prefer DynaPuff via system font name, fallback to default
+                try:
+                    self.overlay_font_large = pygame.freetype.SysFont("DynaPuff", 63)
+                    self.overlay_font_small = pygame.freetype.SysFont("DynaPuff", 27)
+                    self.nametag_font = pygame.freetype.SysFont("DynaPuff", 18)
+                except Exception:
+                    self.overlay_font_large = pygame.freetype.SysFont(None, 63)
+                    self.overlay_font_small = pygame.freetype.SysFont(None, 27)
+                    self.nametag_font = pygame.freetype.SysFont(None, 18)
         except Exception:
             self.overlay_font_large = None
             self.overlay_font_small = None
+            self.nametag_font = None
 
     def render(self, time, player, other_players_display):
         from config import WORLD_WIDTH, WORLD_HEIGHT
@@ -520,5 +558,86 @@ void main() {
             self.ctx.enable(moderngl.BLEND)
             self.overlay_vao.render(mode=moderngl.TRIANGLE_STRIP)
             # leaving blending state as-is
+        except Exception:
+            return
+
+    def draw_player_nametags(self, player, other_players_display, names=None, y_offset=56):
+        try:
+            from config import WIDTH, HEIGHT
+        except Exception:
+            WIDTH, HEIGHT = 1280, 720
+
+        # create transparent surface
+        surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA, 32)
+        surf = surf.convert_alpha()
+
+        # helper to draw a nametag (text only) above screen position
+        def draw_nametag(screen_x, screen_y, text=None):
+            if not text:
+                return
+            font = getattr(self, 'nametag_font', None) or self.overlay_font_small
+            if not font:
+                return
+            # position slightly higher
+            pos = (int(screen_x), int(screen_y - y_offset))
+            # draw shadow for readability
+            try:
+                shadow_surf, _ = font.render(text, (0, 0, 0))
+                surf.blit(shadow_surf, shadow_surf.get_rect(center=(pos[0] + 1, pos[1] + 1)))
+            except Exception:
+                pass
+            # draw main text in white
+            try:
+                txt_surf, _ = font.render(text, (255, 255, 255))
+                surf.blit(txt_surf, txt_surf.get_rect(center=pos))
+            except Exception:
+                pass
+
+        # draw for local player
+        try:
+            sx, sy = self.world_to_screen(player.x, player.y, player.camera_x, player.camera_y, WIDTH, HEIGHT)
+            # local player label: if names dict provided and contains a special key 'local', use it
+            local_label = None
+            if isinstance(names, dict):
+                local_label = names.get('local')
+            draw_nametag(sx, sy, local_label or "You")
+        except Exception:
+            pass
+
+        # draw for other players
+        for pid, p in other_players_display.items():
+            try:
+                sx, sy = self.world_to_screen(p['x'], p['y'], player.camera_x, player.camera_y, WIDTH, HEIGHT)
+                label = None
+                if isinstance(names, dict):
+                    label = names.get(pid)
+                draw_nametag(sx, sy, label)
+            except Exception:
+                continue
+
+        # upload to GPU as texture and render on top (reuse overlay texture logic)
+        data = pygame.image.tostring(surf, 'RGBA', True)
+        w, h = surf.get_size()
+
+        try:
+            if self.overlay_texture is None:
+                self.overlay_texture = self.ctx.texture((w, h), 4, data)
+                self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+            else:
+                try:
+                    self.overlay_texture.write(data)
+                except Exception:
+                    self.overlay_texture.release()
+                    self.overlay_texture = self.ctx.texture((w, h), 4, data)
+                    self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+
+            self.overlay_texture.use(location=2)
+            try:
+                self.overlay_program['overlayTexture'].value = 2
+            except Exception:
+                pass
+
+            self.ctx.enable(moderngl.BLEND)
+            self.overlay_vao.render(mode=moderngl.TRIANGLE_STRIP)
         except Exception:
             return
