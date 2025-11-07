@@ -32,6 +32,8 @@ class Player:
 
         self.sprint = 100
         self.sprinting = False
+        # Option to invert right-stick rotation direction if a controller's axis is reversed
+        self.invert_right_stick = False
 
     def update(self, dt, keys, controller=None):
         import pygame
@@ -51,10 +53,14 @@ class Player:
         # Read controller axes/hats defensively since some controllers may not have the same layout
         if controller is not None:
             try:
-                raw_rotation = controller.get_axis(2)
+                    raw_rotation = controller.get_axis(2)
             except Exception:
                 raw_rotation = 0.0
-            rotation_value = -raw_rotation if raw_rotation is not None else 0.0
+            # Allow inversion in case a controller's axis is reversed for rotation
+            if self.invert_right_stick:
+                rotation_value = -raw_rotation if raw_rotation is not None else 0.0
+            else:
+                rotation_value = raw_rotation if raw_rotation is not None else 0.0
 
             try:
                 dpad_x = controller.get_hat(0)[0]
@@ -63,6 +69,9 @@ class Player:
 
             # Apply rotation with dead zone
             if abs(rotation_value) > 0.1:
+                # Apply rotation in the same directional sense as keyboard/D-pad
+                # If rotation_value is positive (stick right), rotate right (decrease target_rotation)
+                # If rotation_value is negative (stick left), rotate left (increase target_rotation)
                 self.target_rotation -= rotation_value * self.rotation_speed * dt
             if dpad_x != 0:
                 self.target_rotation -= dpad_x * self.rotation_speed * dt
