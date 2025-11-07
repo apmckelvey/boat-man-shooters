@@ -9,6 +9,12 @@ from network import NetworkManager
 from prediction import PredictionManager
 
 pygame.init()
+#controller initialization
+pygame.joystick.init()
+
+#music
+pygame.mixer.music.load('../Assets/music.mp3')
+pygame.mixer.music.play(-1)
 
 # Set OpenGL attributes before creating the display
 pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
