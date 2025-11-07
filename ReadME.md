@@ -96,4 +96,17 @@ pip3 install pygame supabase moderngl numpy
 # Credits <a name="credits"></a>
 
 *Background Music:* **Ocean wave loops** by DesiFreeMusic found on Pixabay:  
-[https://pixabay.com/music/upbeat-ocean-wave-loops-377890/](https://pixabay.com/music/upbeat-ocean-wave-loops-377890/)
+[https://pixabay.com/music/upbeat-ocean-wave-loops-377890/](https://pixabay.com/music/upbeat-ocean-wave-loops-377890/)  
+Under the following license:  
+[https://pixabay.com/service/license-summary/](https://pixabay.com/service/license-summary/)
+
+*Cannonball:* found on [pngimg.com](pngimg.com):  
+[https://pngimg.com/image/108033](https://pngimg.com/image/108033)  
+Under the following license:  
+[Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)](https://pngimg.com/license)
+
+*Button Sounds:* **Casual Click Pop UI 3** and **casual Click Pop UI 2** by floraphonic found on Pixabay:
+[https://pixabay.com/sound-effects/casual-click-pop-ui-2-262119/](https://pixabay.com/sound-effects/casual-click-pop-ui-2-262119/)
+[https://pixabay.com/sound-effects/casual-click-pop-ui-3-262120/](https://pixabay.com/sound-effects/casual-click-pop-ui-3-262120/)
+Under the following license:  
+[https://pixabay.com/service/license-summary/](https://pixabay.com/service/license-summary/)
