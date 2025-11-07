@@ -561,7 +561,7 @@ void main() {
         except Exception:
             return
 
-    def draw_player_nametags(self, player, other_players_display, names=None, y_offset=56):
+    def draw_player_nametags(self, player, other_players_display, names=None, y_offset=75):
         try:
             from config import WIDTH, HEIGHT
         except Exception:
