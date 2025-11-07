@@ -24,7 +24,7 @@ else:
     print(f"Detected joystick: {controller_joystick.get_name()}")
 
 #music
-pygame.mixer.music.load('../Assets/music.mp3')
+pygame.mixer.music.load('../Assets/Sounds/music.mp3')
 pygame.mixer.music.play(-1)
 
 # Set OpenGL attributes before creating the display
