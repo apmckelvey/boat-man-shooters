@@ -43,6 +43,11 @@ else:
 pygame.mixer.music.load('../Assets/Sounds/music.mp3')
 pygame.mixer.music.play(-1)
 
+icon = pygame.image.load('../Logos/logo.png')
+
+pygame.display.set_icon(icon)
+pygame.display.set_caption("Boat Man Shooters")
+
 # Set OpenGL attributes before creating the display
 pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
 pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
@@ -50,7 +55,6 @@ pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEX
 pygame.display.gl_set_attribute(pygame.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, True)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF | RESIZABLE)
 
-pygame.display.set_caption("Boat Man Shooters")
 clock = pygame.time.Clock()
 
 # large font for overlay messages
