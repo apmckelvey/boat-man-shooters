@@ -2,6 +2,7 @@ import pygame
 import moderngl
 import asyncio
 import math
+import sys
 from pygame import RESIZABLE
 from config import *
 from renderer import Renderer
@@ -70,6 +71,7 @@ item_manager = ItemManager(num_items=15) #number of items
 
 
 async def main():
+    fullscreen = False
     running = True
     start_ticks = pygame.time.get_ticks()
     print("Demo running — Player:", network.PLAYER_NAME)
@@ -92,6 +94,12 @@ async def main():
                 running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
+                fullscreen = not fullscreen
+                if fullscreen:
+                    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF | pygame.FULLSCREEN)
+                else:
+                    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF | pygame.RESIZABLE)
 
         keys = pygame.key.get_pressed()
         player.update(dt, keys, controller_joystick)
