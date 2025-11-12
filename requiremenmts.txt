@@ -1,0 +1,11 @@
+pygame
+pygame.freetype
+moderngl
+asyncio
+sys
+os
+time
+uuid
+threading
+supabase
+math
