@@ -99,6 +99,8 @@ class Player:
 
         if not (keys[pygame.K_w] or keys[pygame.K_UP]):
             self.sprinting = False
+        if not keys[pygame.K_LSHIFT]:
+            self.sprinting = False
 
 
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
