@@ -29,7 +29,7 @@ else:
 pygame.mixer.music.load('../Assets/Sounds/music.mp3')
 pygame.mixer.music.play(-1)
 
-icon = pygame.image.load('../Logos/logo.png')
+icon = pygame.image.load('../Logos/icon.png')
 
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Boat Man Shooters")
