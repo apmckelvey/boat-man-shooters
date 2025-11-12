@@ -1,5 +1,4 @@
 pygame
-pygame.freetype
 moderngl
 asyncio
 sys
