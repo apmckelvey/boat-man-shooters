@@ -35,8 +35,8 @@ class ItemManager:
         self.num_items = num_items
         self.textures = {}  # Will store ModernGL textures
         self._load_item_images()
-        xvalues = [0, 6, 7, 8, 9, 4, 4, 3, 2, 1, 5, 6, 7, 8, 9, 5, 4, 2, 6, 523, 132, 1280]
-        yvalues = [0, 2, 4, 3, 2, 3, 2, 12, 3, 5, 67, 8, 5, 3, 5, 1, 2, 6, 78, 6, 412, 2]
+        xvalues = [3, 14, 7, 11, 2, 9, 15, 5, 12, 6, 8, 1, 13, 4, 10, 7, 3, 15, 9, 12, 5, 11]
+        yvalues = [8, 2, 14, 6, 11, 3, 15, 7, 10, 4, 13, 5, 9, 1, 12, 8, 14, 6, 11, 3, 15]
         self._spawn_items(xvalues,yvalues)
 
 
