@@ -47,7 +47,7 @@ class ItemManager:
             texture = ctx.texture((width, height), 4, image_data)
             texture.filter = (ctx.LINEAR, ctx.LINEAR)
             self.textures[item_type] = texture
-            print(f"Created GL texture for item{item_type}")
+            print(f"Created GL texture for item {item_type}")
 
     def _load_item_images(self):
         for i in range(1, 6):  # item1 through item5
