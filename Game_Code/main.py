@@ -9,6 +9,8 @@ MAIN MENU:
         i. Keep the button in pressed graphic while being clicked
         ii. As button is being pressed, decrease the size by 5%
     c. When the button is unpressed, revert to the unpressed state, and play unpress sound (../Assets/Sounds/Button\ Sounds/button-submit/button-submit-unpress.mp3)
+
+REFER TO THE BUTTON-TEST.HTML FOR THE PREFERRED BUTTON ANIMATIONS
 """
 
 import pygame
