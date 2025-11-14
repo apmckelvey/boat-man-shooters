@@ -19,23 +19,30 @@
    
 # Overview <a name="overview"></a>
 
-Start typing overview
+This is a online multiple player game where the intention is to shoot other boats and be the person with the most *(kills/time alive?)*. It is a constant lobby in which there can be a winner at any given time, given who has the most *(kills/time alive?)*. 
 
 ## Features <a name="features"></a>
 
-- Here is list
-- You can add more than one
-   - You can add one within another
-      - and one within that
+- Online multiplayer game
+- Account system
+- Fluid UI interface/animations
+- Sounds and background music
+- Both keyboard and controller input
+- 
 
 # Mechanics <a name="mechanics"></a>
 
 ## File Structure <a name="file_structure"></a>
 
-The text-based game has the following structure:  
-├── main.py&emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp; &emsp;Python file of the game.  
-├── You can continue...  
-└── ReadME.md&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp; This documentation file you are reading right now.  
+The game has the following structure:  
+├── .github *Configuration files for GitHub*  
+├── Assets *Contains the font, music, and button sounds*  
+├── Game_Code *Contains all the game code*  
+├── Graphics *Contains Map Items, Sprites, Butons, and Menus*  
+├── Logos *All the logos and icons for our project*  
+├── .gitignore *Tells GitHub to ignore specific files when commiting*  
+├── requirements.txt *Tells GitHub Dependabot what dependencies are needed to update*  
+└── ReadME.md *This documentation file you are reading right now.*   
 
 ## Logic <a name="logic"></a>
 
@@ -110,3 +117,5 @@ Under the following license:
 [https://pixabay.com/sound-effects/casual-click-pop-ui-3-262120/](https://pixabay.com/sound-effects/casual-click-pop-ui-3-262120/)<br>
 Under the following license:  
 [https://pixabay.com/service/license-summary/](https://pixabay.com/service/license-summary/)
+
+*Sprites (Including Player and Enemy)* Made by **Liam Blackmon**
