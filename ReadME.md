@@ -53,6 +53,10 @@ The game operates on a ... The core logic can be broken down into the following 
 
 ## Code <a name="code"></a>
 
+# Why pygame-ce?
+
+We thwn explain why we did what we did...
+
 You can describe stuff, like how `print()` prints stuff.
 ``` Python
 # And add code blocks!
@@ -64,7 +68,7 @@ print("Code block!")
 
 ## Installation of Dependencies <a name="installation_of_dependencies">
 
-This project uses the dependencies `pygame`, `moderngl`, `numpy`, and `supabase`, which are not built in to the Python system. To install these dependencies, you will have to use pip in your terminal if you are in a local environment.
+This project uses the dependencies `pygame-ce`, `moderngl`, `numpy`, and `supabase`, which are not built in to the Python system. To install these dependencies, you will have to use pip in your terminal if you are in a local environment.
 
 1. ### Install `pip` if Needed
    1. First, get the `get-pip.py` file from the following link:  
@@ -77,17 +81,43 @@ python3 get-pip.py
 ```
 > *NOTE:* Replace *"/Directory/to/get-pip.py"* with the actual directory to `get-pip.py`
 
-2. ### Get Dependencies
-Run the following commands in your terminal to install the dependencies using `pip`.
+2. ### Get `pygame-ce`
+If you don't have pygame installed, you may skip the following step to delete the basic pygame. If you do have this command, run the following in your terminal to delete pygame so that you may replace it with `pygame-ce`.
 
 ```Bash
-pip install pygame supabase moderngl numpy
+pip uninstall pygame
 ```
 
-If that did not work, you can alternatively try these following commands:
+If that did not work, you can alternatively try the following command:
 
 ```Bash
-pip3 install pygame supabase moderngl numpy
+pip3 uninstall pygame
+```
+Now you may install `pygame-ce`:
+
+```Bash
+pip install pygame
+```
+
+If that did not work, you can alternatively try the following command:
+
+```Bash
+pip3 install pygame
+```
+
+> ***NOTE:*** These directions are assuming you are running Python verison 3 or higher.
+
+3. ### Get Other Dependencies
+Run the following commands in your terminal to install the rest of the dependencies using `pip`.
+
+```Bash
+pip install supabase moderngl numpy
+```
+
+If that did not work, you can alternatively try the following command:
+
+```Bash
+pip3 install supabase moderngl numpy
 ```
 
 > ***NOTE:*** These directions are assuming you are running Python verison 3 or higher.
