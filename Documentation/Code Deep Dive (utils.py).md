@@ -1,4 +1,4 @@
-# Deep Code Dive: `utils.py`
+# Code Deep Dive: `utils.py`
 
 First, the necessary module, `math`, is imported.
 ```Python
@@ -20,7 +20,7 @@ def lerp_angle(a, b, t):
     return a + diff * t
 ```
 
-Description...
+The function `smoothstep(edge0, edge1, x)` creates a smooth transition between two values instead of changing at a constant speed. The values `edge0` and `edge1` define the start and end of the range, and `x` is the input to be mapped into that range. The function first returns `0.0` if `edge0` and `edge1` are the same, to avoid dividing by zero. It then maps `x` into a `t` value between 0 and 1 and clamps it so it cannot go outside that range. Finally, it applies the formula `t * t * (3.0 - 2.0 * t)` to ease in and out, giving a smooth value between 0 and 1 that can be used for blending or animations.
 ```Python
 def smoothstep(edge0, edge1, x):
     if edge0 == edge1:
@@ -29,7 +29,7 @@ def smoothstep(edge0, edge1, x):
     return t * t * (3.0 - 2.0 * t)
 ```
 
-Description...
+The function `small_hash_to_phase_amp(s)` turns a short string `s` into two numbers: a `phase` (an angle in radians) and an `amp` (an amplitude or strength). This lets you take something like a name and always get the same “random‑looking” phase and amplitude from it. The function builds an integer hash `h` by combining the characters in the string. It then uses that hash to create a `phase` between `0` and `2π` and an `amp` in a range centered a bit above 1. The returned `(phase, amp)` pair can be used to give different players, objects, or effects unique but repeatable variations.
 ```Python
 def small_hash_to_phase_amp(s):
     h = 0
