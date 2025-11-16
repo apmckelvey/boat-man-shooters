@@ -41,7 +41,7 @@ The game has the following structure:
 ├── Logos *All the logos and icons for our project*  
 ├── .gitignore *Tells GitHub to ignore specific files when commiting*  
 ├── requirements.txt *Tells GitHub Dependabot what dependencies are needed to update*  
-├── license.md *The license for this project.*
+├── LICENSE *The license for this project.*  
 └── ReadME.md *This documentation file you are reading right now.*   
 
 ## Logic <a name="logic"></a>
@@ -148,4 +148,4 @@ Under the following license:
 
 ## License
 
-This project is made open-source by the MIT license, which can be found in `licence.md`
+This project is made open-source by the MIT license, which can be found in `LICENSE` on the main page of the repository.
