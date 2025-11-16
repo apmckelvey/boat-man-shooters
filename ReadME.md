@@ -45,17 +45,13 @@ The game has the following structure:
 └── ReadME.md *This documentation file you are reading right now.*   
 
 ## Logic <a name="logic"></a>
-
-The game operates on a ... The core logic can be broken down into the following steps:
-
-1. You can have nubered list too...
-2. And add more than one item!
+<img src="Documentation/ Game\ Logic\ Flowchart.png" alt="Game Logic Flowchart">
 
 ## Code <a name="code"></a>
 
 # Why pygame-ce?
 
-We thwn explain why we did what we did...
+We then explain why we did what we did...
 
 You can describe stuff, like how `print()` prints stuff.
 ``` Python
