@@ -1,7 +1,7 @@
 import math
 from utils import lerp_angle, smoothstep
 from config import SPRINT
-
+from renderer import Renderer
 
 class Player:
     def __init__(self, x, y):
@@ -10,9 +10,9 @@ class Player:
         self.rotation = 0.0
         self.target_rotation = 0.0
 
-        self.speed = 1
-        self.backward_speed = 0.08
-        self.rotation_speed = 5
+        self.speed = 5
+        self.backward_speed = 1
+        self.rotation_speed = 10
         self.rotation_smoothing = 0.15
 
         self.current_velocity = 0.0
@@ -63,10 +63,12 @@ class Player:
         # Cannon fire with Q and E
         if keys[pygame.K_q] and self.L_Can_fire:
             print("Left cannon fired")
+            cannon_shoot = Renderer.cannon_shoot(self, "left")
             self.L_Can_fire = False
             self.L_fire_time = current_time
         if keys[pygame.K_e] and self.R_Can_fire:
             print("Right cannon fired")
+            cannon_shoot = Renderer.cannon_shoot(self,"right")
             self.R_Can_fire = False
             self.R_fire_time = current_time
 
