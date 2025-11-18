@@ -907,17 +907,6 @@ void main() {
         except Exception:
             return
 
-    def cannon_shoot(self,side):
-        selfx = self.__getattribute__('x')
-        selfy = self.__getattribute__('y')
-        side = side
-        cannon_ball = pygame.image.load("../Graphics/Sprites/cannonball.png").convert_alpha()
-        cannon_rect = cannon_ball.get_rect()
-        cannon_rect.center = (selfx, selfy)
-        print(side)
-        print(cannon_rect.center)
-        print(selfx,selfy)
-
     def draw_cannon_balls(self, cannon_balls, player):
         try:
             from config import WIDTH, HEIGHT
