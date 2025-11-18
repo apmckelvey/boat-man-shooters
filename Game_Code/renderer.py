@@ -607,13 +607,13 @@ void main() {
         sway_phase_array = np.zeros(10, dtype='f4')
         sway_amp_array = np.zeros(10, dtype='f4')
 
-        for idx, e in enumerate(display_list): #displays other players
-            pos_array[idx * 2 + 0] = float(e['x']) #gets the x pos of the other players
-            pos_array[idx * 2 + 1] = float(e['y']) #y pos of other players
-            rot_array[idx] = float(e['rot']) #rotation
+        for idx, e in enumerate(display_list):
+            pos_array[idx * 2 + 0] = float(e['x'])
+            pos_array[idx * 2 + 1] = float(e['y'])
+            rot_array[idx] = float(e['rot'])
             speed_array[idx] = float(max(0.0, min(2.5, e.get('speed', 0.0))))
-            sway_phase_array[idx] = float(e.get('sway_phase', 0.0)) #sway animation
-            sway_amp_array[idx] = float(e.get('sway_amp', 1.0)) #sway animation
+            sway_phase_array[idx] = float(e.get('sway_phase', 0.0))
+            sway_amp_array[idx] = float(e.get('sway_amp', 1.0))
 
         try:
             self.program.get("otherBoatPositions").write(pos_array.tobytes())
@@ -649,10 +649,10 @@ void main() {
             pos_array = np.zeros(30, dtype='f4')
             type_array = np.zeros(15, dtype='i4')
 
-            for idx, item in enumerate(visible_items[:15]): #gets the amount of rocks to render
-                pos_array[idx * 2] = float(item.x) #gets the x pos of the rocks to be rendered
-                pos_array[idx * 2 + 1] = float(item.y) #gets the y pos of the rocks to be rendered
-                type_array[idx] = int(item.item_type) #gets the type of rock to render
+            for idx, item in enumerate(visible_items[:15]):
+                pos_array[idx * 2] = float(item.x)
+                pos_array[idx * 2 + 1] = float(item.y)
+                type_array[idx] = int(item.item_type)
 
             # Send to shader
             try:
@@ -917,10 +917,48 @@ void main() {
         print(side)
         print(cannon_rect.center)
         print(selfx,selfy)
-        velocity = 0
-        if side == "right":
-            velocity = 10
-        elif side == "left":
-            velocity = -10
-        else:
-            velocity = 0
+
+    def draw_cannon_balls(self, cannon_balls, player):
+        try:
+            from config import WIDTH, HEIGHT
+        except Exception:
+            WIDTH, HEIGHT = 1280, 720
+
+        surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA, 32)
+        surf = surf.convert_alpha()
+
+        for ball in cannon_balls:
+            screen_x, screen_y = self.world_to_screen(
+                ball.x, ball.y,
+                player.camera_x, player.camera_y,
+                WIDTH, HEIGHT
+            )
+
+            if hasattr(ball, 'image') and ball.image:
+                img_rect = ball.image.get_rect()
+                draw_x = int(screen_x - img_rect.width / 2)
+                draw_y = int(screen_y - img_rect.height / 2)
+                surf.blit(ball.image, (draw_x, draw_y))
+            else:
+                pygame.draw.circle(surf, (255, 255, 255), (int(screen_x), int(screen_y)), 8)
+
+        data = pygame.image.tostring(surf, 'RGBA', True)
+        w, h = surf.get_size()
+
+        try:
+            if self.overlay_texture is None:
+                self.overlay_texture = self.ctx.texture((WIDTH, HEIGHT), 4)
+                self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+
+            self.overlay_texture.write(data)
+            self.overlay_texture.use(location=2)
+
+            if hasattr(self, 'overlay_program'):
+                self.overlay_program['overlayTexture'].value = 2
+                self.ctx.enable(moderngl.BLEND)
+                if hasattr(self, 'overlay_vao'):
+                    self.overlay_vao.render(mode=moderngl.TRIANGLE_STRIP)
+
+        except Exception as e:
+            print(f"Error drawing cannon balls: {e}")
+
