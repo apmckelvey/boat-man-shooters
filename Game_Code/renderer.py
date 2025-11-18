@@ -607,13 +607,13 @@ void main() {
         sway_phase_array = np.zeros(10, dtype='f4')
         sway_amp_array = np.zeros(10, dtype='f4')
 
-        for idx, e in enumerate(display_list):
-            pos_array[idx * 2 + 0] = float(e['x'])
-            pos_array[idx * 2 + 1] = float(e['y'])
-            rot_array[idx] = float(e['rot'])
+        for idx, e in enumerate(display_list): #displays other players
+            pos_array[idx * 2 + 0] = float(e['x']) #gets the x pos of the other players
+            pos_array[idx * 2 + 1] = float(e['y']) #y pos of other players
+            rot_array[idx] = float(e['rot']) #rotation
             speed_array[idx] = float(max(0.0, min(2.5, e.get('speed', 0.0))))
-            sway_phase_array[idx] = float(e.get('sway_phase', 0.0))
-            sway_amp_array[idx] = float(e.get('sway_amp', 1.0))
+            sway_phase_array[idx] = float(e.get('sway_phase', 0.0)) #sway animation
+            sway_amp_array[idx] = float(e.get('sway_amp', 1.0)) #sway animation
 
         try:
             self.program.get("otherBoatPositions").write(pos_array.tobytes())
@@ -649,10 +649,10 @@ void main() {
             pos_array = np.zeros(30, dtype='f4')
             type_array = np.zeros(15, dtype='i4')
 
-            for idx, item in enumerate(visible_items[:15]):
-                pos_array[idx * 2] = float(item.x)
-                pos_array[idx * 2 + 1] = float(item.y)
-                type_array[idx] = int(item.item_type)
+            for idx, item in enumerate(visible_items[:15]): #gets the amount of rocks to render
+                pos_array[idx * 2] = float(item.x) #gets the x pos of the rocks to be rendered
+                pos_array[idx * 2 + 1] = float(item.y) #gets the y pos of the rocks to be rendered
+                type_array[idx] = int(item.item_type) #gets the type of rock to render
 
             # Send to shader
             try:
@@ -911,5 +911,10 @@ void main() {
         selfx = self.__getattribute__('x')
         selfy = self.__getattribute__('y')
         side = side
+        cannon_ball = pygame.image.load("../Graphics/Sprites/cannonball.png").convert_alpha()
+        cannon_rect = cannon_ball.get_rect()
+        cannon_rect.center = (selfx, selfy)
         print(side)
+        print(cannon_rect.center)
+        print(selfx,selfy)
 

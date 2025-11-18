@@ -37,7 +37,8 @@ class ItemManager:
         self._load_item_images()
         xvalues = [3, 14, 7, 11, 2, 9, 13, 5, 12, 6, 8, 1, 13, 4, 10, 7, 3, 15, 9, 12, 5, 11]
         yvalues = [8, 2, 14, 6, 11, 3, 10, 7, 10, 4, 13, 5, 9, 1, 12, 8, 14, 6, 11, 3, 14.2]
-        self._spawn_items(xvalues,yvalues)
+        item_types =   [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2]
+        self._spawn_items(xvalues,yvalues, item_types)
 
 
     def create_gl_textures(self, ctx):
@@ -69,18 +70,18 @@ class ItemManager:
                 self.images[i] = placeholder
 
 
-    def _spawn_items(self, xvalues, yvalues):
+    def _spawn_items(self, xvalues, yvalues, item_types):
         # Create a margin from the edges
         margin = 1.0
 
         for _ in range(self.num_items):
 
-            # Random position within world bounds
+            # Set position within world bounds
             x = xvalues.pop(0)
             y = yvalues.pop(0)
 
-            # Random item type (1-5)
-            item_type = random.randint(1, 5)
+            #set type
+            item_type = item_types.pop(0)
 
             # Get the image for this item type
             image = self.images.get(item_type)
