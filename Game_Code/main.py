@@ -23,7 +23,7 @@ from network import NetworkManager
 from prediction import PredictionManager
 from items import ItemManager
 import math
-
+import time
 
 pygame.init()
 # controller initialization
@@ -74,6 +74,12 @@ network = None
 prediction = None
 item_manager = None
 
+L_Can_fire = True
+R_Can_fire = True
+L_fire_time = 0
+R_fire_time = 0
+cooldown = 1
+current_time = pygame.time.get_ticks()
 
 async def main():
     global game_state, player, network, prediction, item_manager
@@ -129,17 +135,28 @@ async def main():
                     self.age += dt
                     return self.age < self.lifetime
 
+
+
             if event.type == pygame.KEYDOWN and game_state == "GAME":
-                if event.key == pygame.K_q:  # Left cannon
+                global L_Can_fire, R_Can_fire, current_time, L_fire_time, R_fire_time
+                if event.key == pygame.K_q and L_Can_fire is True:  # Left cannon
+                    L_Can_fire = False
+                    L_fire_time = current_time
                     new_ball = CannonBall(player.x, player.y, player.rotation, "left")
                     cannon_balls.append(new_ball)
                     print(f"Left cannon fired! Total balls: {len(cannon_balls)}")
 
-                if event.key == pygame.K_e:  # Right cannon
+                if event.key == pygame.K_e and R_Can_fire is True:  # Right cannon
+                    R_Can_fire = False
+                    R_fire_time = current_time
                     new_ball = CannonBall(player.x, player.y, player.rotation, "right")
                     cannon_balls.append(new_ball)
                     print(f"Right cannon fired! Total balls: {len(cannon_balls)}")
 
+                if not L_Can_fire and current_time - L_fire_time >= cooldown:
+                    L_Can_fire = True
+                if not R_Can_fire and current_time - R_fire_time >= cooldown:
+                    R_Can_fire = True
 
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
