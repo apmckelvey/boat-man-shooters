@@ -45,12 +45,6 @@ class Player:
         self.engine_channel = None
         self.engine_fade_ms = 150  # quick fade in/out in milliseconds
 
-        self.L_Can_fire = True
-        self.R_Can_fire = True
-        self.L_fire_time = 0
-        self.R_fire_time = 0
-        self.cooldown = 3000
-
     def update(self, dt, keys, controller=None):
         import pygame
         from config import WORLD_WIDTH, WORLD_HEIGHT
@@ -66,24 +60,6 @@ class Player:
             self.target_rotation += self.rotation_speed * dt
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.target_rotation -= self.rotation_speed * dt
-
-        # Cannon fire with Q and E
-        if keys[pygame.K_q] and self.L_Can_fire:
-            print("Left cannon fired")
-            cannon_shoot = Renderer.cannon_shoot(self, "left")
-            self.L_Can_fire = False
-            self.L_fire_time = current_time
-        if keys[pygame.K_e] and self.R_Can_fire:
-            print("Right cannon fired")
-            cannon_shoot = Renderer.cannon_shoot(self,"right")
-            self.R_Can_fire = False
-            self.R_fire_time = current_time
-
-        # Cooldown thing, waits 3 seconds to reset
-        if not self.L_Can_fire and current_time - self.L_fire_time >= self.cooldown:
-            self.L_Can_fire = True
-        if not self.R_Can_fire and current_time - self.R_fire_time >= self.cooldown:
-            self.R_Can_fire = True
 
 
         # Controller input for rotation (right stick or d-pad)
