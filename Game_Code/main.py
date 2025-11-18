@@ -48,6 +48,9 @@ else:
 pygame.mixer.music.load('../Assets/Sounds/music.mp3')
 pygame.mixer.music.play(-1)
 
+#cannonball sound
+cannon_sound = pygame.mixer.Sound('../Assets/Sounds/Game Sounds/cannon.mp3')
+
 icon = pygame.image.load('../Logos/icon.png')
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Boat Man Shooters")
@@ -132,11 +135,13 @@ async def main():
             if event.type == pygame.KEYDOWN and game_state == "GAME":
                 if event.key == pygame.K_q:  # Left cannon
                     new_ball = CannonBall(player.x, player.y, player.rotation, "left")
+                    cannon_sound.play()
                     cannon_balls.append(new_ball)
                     print(f"Left cannon fired! Total balls: {len(cannon_balls)}")
 
                 if event.key == pygame.K_e:  # Right cannon
                     new_ball = CannonBall(player.x, player.y, player.rotation, "right")
+                    cannon_sound.play()
                     cannon_balls.append(new_ball)
                     print(f"Right cannon fired! Total balls: {len(cannon_balls)}")
 
@@ -157,10 +162,10 @@ async def main():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
                 fullscreen = not fullscreen
                 if fullscreen:
-                    screen = pygame.display.set_mode((WIDTH, HEIGHT),
+                    pygame.display.set_mode((WIDTH, HEIGHT),
                                                      pygame.OPENGL | pygame.DOUBLEBUF | pygame.FULLSCREEN)
                 else:
-                    screen = pygame.display.set_mode((WIDTH, HEIGHT),
+                    pygame.display.set_mode((WIDTH, HEIGHT),
                                                      pygame.OPENGL | pygame.DOUBLEBUF | pygame.RESIZABLE)
 
             if game_state == "MENU" and event.type == pygame.MOUSEBUTTONDOWN:
