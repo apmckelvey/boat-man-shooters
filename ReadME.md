@@ -34,15 +34,15 @@ This is a online multiple player game where the intention is to shoot other boat
 ## File Structure <a name="file_structure"></a>
 
 The game has the following structure:  
-├── .github *Configuration files for GitHub*  
-├── Assets *Contains the font, music, and button sounds*  
-├── Game_Code *Contains all the game code*  
-├── Graphics *Contains Map Items, Sprites, Butons, and Menus*  
-├── Logos *All the logos and icons for our project*  
-├── .gitignore *Tells GitHub to ignore specific files when commiting*  
-├── requirements.txt *Tells GitHub Dependabot what dependencies are needed to update*  
-├── LICENSE *The license for this project.*  
-└── ReadME.md *This documentation file you are reading right now.*   
+├── .github &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***Configuration files for GitHub***  
+├── Assets &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***Contains the font, music, and button sounds***  
+├── Game_Code &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***Contains all the game code***  
+├── Graphics &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;*C**ontains Map Items, Sprites, Butons, and Menus***  
+├── Logos &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***All the logos and icons for our project***  
+├── .gitignore &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***Tells GitHub to ignore specific files when commiting***  
+├── requirements.txt &nbsp; &nbsp; &nbsp; ***Tells GitHub Dependabot what dependencies are needed to update***  
+├── LICENSE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***The license for this project.***  
+└── ReadME.md &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***This documentation file you are reading right now.***  
 
 ## Logic <a name="logic"></a>
 <img src="Documentation/Game Logic Flowchart.png" alt="Game Logic Flowchart">
