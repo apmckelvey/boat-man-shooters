@@ -92,6 +92,56 @@ async def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            class CannonBall:
+                def __init__(self, x, y, rotation, side):
+                    self.x = x
+                    self.y = y
+                    self.rotation = rotation
+                    self.side = side
+                    self.speed = 1
+                    self.lifetime = 5.0
+                    self.age = 0.0
+
+                    try:
+                        self.image = pygame.image.load("../Graphics/Sprites/cannonball.png").convert_alpha()
+                        self.image = pygame.transform.scale(self.image, (32, 32))
+                        print("Loaded cannonball.png successfully")
+                    except Exception as e:
+                        print(f"Could not load cannonball.png: {e}")
+                        self.image = pygame.Surface((32, 32), pygame.SRCALPHA)
+                        pygame.draw.circle(self.image, (200, 200, 200), (16, 16), 12)
+                        pygame.draw.circle(self.image, (150, 150, 150), (16, 16), 10)
+
+                    offset_distance = 0.15
+                    angle_offset = 1.5 if side == "left" else -1.5
+
+                    spawn_angle = rotation + angle_offset
+                    self.x += math.cos(spawn_angle) * offset_distance
+                    self.y += math.sin(spawn_angle) * offset_distance
+
+                    self.velocity_x = math.cos(spawn_angle) * self.speed
+                    self.velocity_y = math.sin(spawn_angle) * self.speed
+
+                def update(self, dt):
+                    self.x += self.velocity_x * dt
+                    self.y += self.velocity_y * dt
+                    self.age += dt
+                    return self.age < self.lifetime
+
+            if event.type == pygame.KEYDOWN and game_state == "GAME":
+                if event.key == pygame.K_q:  # Left cannon
+                    new_ball = CannonBall(player.x, player.y, player.rotation, "left")
+                    cannon_balls.append(new_ball)
+                    print(f"Left cannon fired! Total balls: {len(cannon_balls)}")
+
+                if event.key == pygame.K_e:  # Right cannon
+                    new_ball = CannonBall(player.x, player.y, player.rotation, "right")
+                    cannon_balls.append(new_ball)
+                    print(f"Right cannon fired! Total balls: {len(cannon_balls)}")
+
+
+
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 if game_state == "GAME":
                     game_state = "MENU"
@@ -122,6 +172,7 @@ async def main():
                     network = NetworkManager(player)
                     prediction = PredictionManager()
                     item_manager = ItemManager(num_items=15)
+                    cannon_balls = []
                     print(f"{network.PLAYER_NAME} joined game")
 
         current_time = (pygame.time.get_ticks() - start_ticks) / 1000.0
@@ -134,6 +185,8 @@ async def main():
             keys = pygame.key.get_pressed()
             player.update(dt, keys, controller_joystick)
 
+            cannon_balls = [ball for ball in cannon_balls if ball.update(dt)]
+
             collision = item_manager.check_collision(player.x, player.y, player_radius=0.15)
             if collision:
                 item_manager.resolve_collision(player, collision)
@@ -141,6 +194,8 @@ async def main():
             prediction.update_predictions(dt, network.other_players)
 
             renderer.render(current_time, player, prediction.other_players_display, item_manager)
+            if cannon_balls:
+                renderer.draw_cannon_balls(cannon_balls, player)
 
             try:
                 names = {'local': getattr(network, 'PLAYER_NAME', 'You')}
