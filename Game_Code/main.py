@@ -220,6 +220,11 @@ async def main():
                 renderer.draw_cannon_balls(cannon_balls, player)
 
             try:
+                renderer.draw_minimap(player, prediction.other_players_display)
+            except Exception:
+                pass
+
+            try:
                 names = {'local': getattr(network, 'PLAYER_NAME', 'You')}
                 try:
                     for pid, pdata in network.other_players.items():

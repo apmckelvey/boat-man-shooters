@@ -696,6 +696,69 @@ void main() {
                     draw_x = int(screen_x - img_width * scale_factor / (2 * img_width))
                     draw_y = int(screen_y - img_height * scale_factor / (2 * img_height))
 
+    def draw_minimap(self, player, other_players_display):
+        try:
+            from config import WIDTH, HEIGHT, WORLD_WIDTH, WORLD_HEIGHT
+        except Exception:
+            WIDTH, HEIGHT = 1280, 720
+            WORLD_WIDTH, WORLD_HEIGHT = 15, 15
+
+        #create a pygame surface - SURF IS SURFACE!
+        surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA, 32)
+        surf = surf.convert_alpha()
+
+        #minimap configuration
+        map_size = 200
+        map_margin = 20
+        map_rect = pygame.Rect(map_margin, map_margin, map_size, map_size)
+
+        #draw background
+        pygame.draw.rect(surf, (50, 50, 50, 160), map_rect)
+        pygame.draw.rect(surf, (200, 200, 200, 255), map_rect, 2)
+
+        def world_to_map(wx, wy):
+            #normalize coordinates 0..1, etc.
+            nx = wx / WORLD_WIDTH
+            ny = wy / WORLD_HEIGHT
+
+            #map to rect
+            mx = map_margin + nx * map_size
+            #flip Y cause world Y is up, screen Y is down
+            my = map_margin + map_size - (ny * map_size)
+            return mx, my
+
+        #draw other players (RED DOTS)
+        for pid, p in other_players_display.items():
+            mx, my = world_to_map(p['x'], p['y'])
+            if map_rect.collidepoint(mx, my):
+                pygame.draw.circle(surf, (255, 50, 50), (int(mx), int(my)), 4)
+
+        #draw player that is playing the player-playable game (GREEN DOT)
+        px, py = world_to_map(player.x, player.y)
+        # Clamp local player drawing to map bounds just in case
+        px = max(map_rect.left + 2, min(map_rect.right - 2, px))
+        py = max(map_rect.top + 2, min(map_rect.bottom - 2, py))
+        pygame.draw.circle(surf, (50, 255, 50), (int(px), int(py)), 5)
+
+        # Render the overlay
+        data = pygame.image.tostring(surf, 'RGBA', True)
+        w, h = surf.get_size()
+
+        try:
+            if self.overlay_texture is None:
+                self.overlay_texture = self.ctx.texture((w, h), 4, data)
+                self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+            else:
+                self.overlay_texture.write(data)
+
+            self.overlay_texture.use(location=2)
+            if self.overlay_program:
+                self.overlay_program['overlayTexture'].value = 2
+                self.ctx.enable(moderngl.BLEND)
+                if self.overlay_vao:
+                    self.overlay_vao.render(mode=moderngl.TRIANGLE_STRIP)
+        except Exception:
+            pass
 
     def draw_overlay(self, main_text: str, sub_text: str = "", alpha: float = 1.0):
         """Render a fullscreen overlay by drawing text into a pygame surface,
