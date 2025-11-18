@@ -39,7 +39,7 @@ class Player:
         # Left trigger rest value (detected on first controller sample) for robust LT detection
         self._lt_rest = None
 
-        # --- Boat movement sound (louder) ---
+
         self.engine_sound = pygame.mixer.Sound('../Assets/Sounds/Game Sounds/boat.mp3')
         self.engine_sound.set_volume(1.0)  # make it louder (1.0 is max)
         self.engine_channel = None
