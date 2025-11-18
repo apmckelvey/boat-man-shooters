@@ -917,4 +917,10 @@ void main() {
         print(side)
         print(cannon_rect.center)
         print(selfx,selfy)
-
+        velocity = 0
+        if side == "right":
+            velocity = 10
+        elif side == "left":
+            velocity = -10
+        else:
+            velocity = 0
