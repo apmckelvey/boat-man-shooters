@@ -108,7 +108,7 @@ async def main():
 
                     try:
                         self.image = pygame.image.load("../Graphics/Sprites/cannonball.png").convert_alpha()
-                        self.image = pygame.transform.scale(self.image, (32, 32))
+                        self.image = pygame.transform.scale(self.image, (24, 24))
                         print("Loaded cannonball.png successfully")
                     except Exception as e:
                         print(f"Could not load cannonball.png: {e}")
