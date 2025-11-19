@@ -38,6 +38,9 @@ class Player:
         # Left trigger rest value (detected on first controller sample) for robust LT detection
         self._lt_rest = None
 
+        self.motor_sound = pygame.mixer.Sound('../Assets/Sounds/Game Sounds/motor.mp3')
+        self.motor_sound.set_volume(0.25)
+        self.motor_sound.play(loops=-1)
 
         self.engine_sound = pygame.mixer.Sound('../Assets/Sounds/Game Sounds/boat.mp3')
         self.engine_sound.set_volume(1.0)  # make it louder (1.0 is max)
@@ -232,3 +235,10 @@ class Player:
 
         self.camera_x += (self.x - self.camera_x) * self.camera_smoothing
         self.camera_y += (self.y - self.camera_y) * self.camera_smoothing
+
+    def stop(self):
+        """Stops all sounds associated with the player."""
+        if self.motor_sound:
+            self.motor_sound.stop()
+        if self.engine_channel:
+            self.engine_channel.stop()
