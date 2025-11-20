@@ -225,5 +225,7 @@ async def main():
     if network: network.stop()
     pygame.quit()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+def start():
+    if __name__ == "__main__":
+        asyncio.run(main())
+start()
