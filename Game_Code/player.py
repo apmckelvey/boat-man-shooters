@@ -1,7 +1,7 @@
 import math
-from utils import lerp_angle, smoothstep
-from config import SPRINT
 import pygame
+from utils import lerp_angle, smoothstep
+from config import SPRINT, WORLD_WIDTH, WORLD_HEIGHT
 
 class Player:
     def __init__(self, x, y):
@@ -10,16 +10,15 @@ class Player:
         self.rotation = 0.0
         self.target_rotation = 0.0
 
-        self.speed = 1
+        self.speed = 1.0
         self.backward_speed = 0.25
-        self.rotation_speed = 3.5
+        self.rotation_speed = 3.8
         self.rotation_smoothing = 0.15
 
         self.current_velocity = 0.0
         self.target_velocity = 0.0
-        self.acceleration = 3.0
-        self.deceleration = 4.0
-
+        self.acceleration = 4.0
+        self.deceleration = 5.0
         self.velocity_x = 0.0
         self.velocity_y = 0.0
         self.wake_fade = 0.0
@@ -33,212 +32,114 @@ class Player:
 
         self.sprint = SPRINT
         self.sprinting = False
-        # Option to invert right-stick rotation direction if a controller's axis is reversed
-        self.invert_right_stick = False
-        # Left trigger rest value (detected on first controller sample) for robust LT detection
-        self._lt_rest = None
 
+        self.l3_pressed = False
+        self.r3_pressed = False
+
+        #motor sound
         self.motor_sound = pygame.mixer.Sound('../Assets/Sounds/Game Sounds/motor.mp3')
         self.motor_sound.set_volume(0.25)
         self.motor_sound.play(loops=-1)
 
+        #engine sound
         self.engine_sound = pygame.mixer.Sound('../Assets/Sounds/Game Sounds/boat.mp3')
-        self.engine_sound.set_volume(1.0)  # make it louder (1.0 is max)
+        self.engine_sound.set_volume(1.0)
         self.engine_channel = None
-        self.engine_fade_ms = 150  # quick fade in/out in milliseconds
+        self.engine_fade_ms = 120
 
     def update(self, dt, keys, controller=None):
-        import pygame
-        from config import WORLD_WIDTH, WORLD_HEIGHT
-        current_time = pygame.time.get_ticks()
+        #input collection vars
+        move_input = 0.0
+        turn_input = 0.0
+        sprint_this_frame = False
 
-        # Regenerate sprint when not currently sprinting (time-based)
-        if self.sprint < 100 and not self.sprinting:
-            # regen rate: 10 units per second
-            self.sprint = min(100, self.sprint + dt * 10.0)
-
-        # Keyboard input for rotation
+        #keyboard input
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
+            move_input = 1.0
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            move_input = -3.0
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            self.target_rotation += self.rotation_speed * dt
+            turn_input += 1.0
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            self.target_rotation -= self.rotation_speed * dt
+            turn_input -= 1.0
+        if keys[pygame.K_LSHIFT]:
+            sprint_this_frame = True
 
+        #controller
+        if controller:
+            #left stick
+            lx = controller.get_axis(0)
+            ly = controller.get_axis(1)
+            #right stick
+            rx = controller.get_axis(2)
+            ry = controller.get_axis(3)
 
-        # Controller input for rotation (right stick or d-pad)
-        # Read controller axes/hats defensively since some controllers may not have the same layout
-        if controller is not None:
-            try:
-                    raw_rotation = controller.get_axis(2)
-            except Exception:
-                raw_rotation = 0.0
-            # Allow inversion in case a controller's axis is reversed for rotation
-            if self.invert_right_stick:
-                rotation_value = -raw_rotation if raw_rotation is not None else 0.0
-            else:
-                rotation_value = raw_rotation if raw_rotation is not None else 0.0
+            #use stick with larger input
+            move_stick = ly if abs(ly) > abs(ry) else ry
+            turn_stick = lx if abs(lx) > abs(rx) else rx
 
-            try:
-                dpad_x = controller.get_hat(0)[0]
-            except Exception:
-                dpad_x = 0
+            deadzone = 0.15
+            if abs(move_stick) > deadzone:
+                move_input = -move_stick  # inverted Y
+            if abs(turn_stick) > deadzone:
+                turn_input -= turn_stick * 1.2  # right stick feel
 
-            # Apply rotation with dead zone
-            if abs(rotation_value) > 0.1:
-                # Apply rotation in the same directional sense as keyboard/D-pad
-                # If rotation_value is positive (stick right), rotate right (decrease target_rotation)
-                # If rotation_value is negative (stick left), rotate left (increase target_rotation)
-                self.target_rotation -= rotation_value * self.rotation_speed * dt
-            if dpad_x != 0:
-                self.target_rotation -= dpad_x * self.rotation_speed * dt
+            #sprint logic
+            if controller:
+                l3 = controller.get_button(pygame.CONTROLLER_BUTTON_LEFTSTICK)
+                r3 = controller.get_button(pygame.CONTROLLER_BUTTON_RIGHTSTICK)
+                if l3 or r3:
+                    sprint_this_frame = True
+        #apply the sprint
+        if sprint_this_frame and move_input > 0 and self.sprint > 0:
+            self.sprinting = True
+            self.sprint = max(0, self.sprint - dt * 35)
+            move_input = 2.0
+        else:
+            self.sprinting = False
+            if self.sprint < SPRINT:
+                self.sprint += dt * 12  # regen
 
+        # rotation
+        self.target_rotation += turn_input * self.rotation_speed * dt
         self.rotation = lerp_angle(self.rotation, self.target_rotation, self.rotation_smoothing)
         self.rotation %= (2 * math.pi)
         self.target_rotation %= (2 * math.pi)
 
-        self.previous_x, self.previous_y = self.x, self.y
-
-        # Initialize movement input
-        movement_input = 0.0
-        if not (keys[pygame.K_w] or keys[pygame.K_UP]):
-            self.sprinting = False
-        if not keys[pygame.K_LSHIFT]:
-            self.sprinting = False
-        # Keyboard controls
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
-            movement_input = 1.0
-            if keys[pygame.K_LSHIFT] and self.sprint > 0 and (keys[pygame.K_w] or keys[pygame.K_UP]):
-                self.sprint -= 0.5
-                self.sprinting = True
-                movement_input = 2
-
-
-        elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            movement_input = -3.0
-
-        # Controller input for movement (if controller is connected)
-        if controller is not None:
-            try:
-                raw_stick = controller.get_axis(1)
-            except Exception:
-                raw_stick = 0.0
-            stick_value = -raw_stick if raw_stick is not None else 0.0
-
-            # Read left trigger (LT) defensively — common axes are 4 or 5 depending on driver
-            lt_pressed = False
-            try:
-                lt_val = None
-                for ax_idx in (4, 5):
-                    try:
-                        v = controller.get_axis(ax_idx)
-                    except Exception:
-                        v = None
-                    if v is not None:
-                        lt_val = v
-                        break
-
-                if lt_val is not None:
-                    # Initialize resting value on first sample
-                    if self._lt_rest is None:
-                        self._lt_rest = lt_val
-
-                    # Determine pressed relative to resting value to handle different driver mappings
-                    # If rest is high (>0.5), pressing typically moves value lower -> detect drop
-                    if self._lt_rest > 0.5:
-                        lt_pressed = lt_val < (self._lt_rest - 0.4)
-                    # If rest is low (<-0.5), pressing typically moves value higher -> detect increase
-                    elif self._lt_rest < -0.5:
-                        lt_pressed = lt_val > (self._lt_rest + 0.4)
-                    else:
-                        # Fallback: treat as pressed when lt_val is clearly positive
-                        lt_pressed = lt_val > 0.5
-            except Exception:
-                lt_pressed = False
-
-            # Stick: map to same keyboard rates with dead zone
-            if abs(stick_value) > 0.1:
-                if stick_value > 0:
-                    movement_input = stick_value * 1.0
-                    # Sprint when LT pressed: use time-based drain
-                    if lt_pressed and self.sprint > 0:
-                        # time-based drain so controller is frame-rate independent
-                        # 0.5 per update @60 FPS -> 30 units/sec
-                        self.sprint = max(0.0, self.sprint - dt * 30.0)
-                        self.sprinting = True
-                        movement_input = 2.0
-                    else:
-                        self.sprinting = False
-                else:
-                    movement_input = stick_value * 3.0
-
-            # D-pad: only used if stick not engaged
-            if abs(stick_value) <= 0.1:
-                try:
-                    dpad_y = controller.get_hat(0)[1]
-                except Exception:
-                    dpad_y = 0
-                if dpad_y > 0:
-                    movement_input = 1.0
-                    if lt_pressed and self.sprint > 0:
-                        # time-based drain so controller is frame-rate independent
-                        # 0.5 per update @60 FPS -> 30 units/sec
-                        self.sprint = max(0.0, self.sprint - dt * 30.0)
-                        self.sprinting = True
-                        movement_input = 2.0
-                    else:
-                        self.sprinting = False
-                elif dpad_y < 0:
-                    movement_input = -3.0
-
-        # Apply the movement input
-        prev_velocity = self.current_velocity
-        self.target_velocity = movement_input
-
+        #movement smoothing
+        self.target_velocity = move_input
         if self.target_velocity > self.current_velocity:
             self.current_velocity = min(self.current_velocity + self.acceleration * dt, self.target_velocity)
         else:
             self.current_velocity = max(self.current_velocity - self.deceleration * dt, self.target_velocity)
 
-        # --- Start/stop sound based on actual movement, with quick fade ---
-        moving_now = abs(self.current_velocity) > 1e-3
-        moving_before = abs(prev_velocity) > 1e-3
-
-        # Started moving this frame: fade in
-        if moving_now and not moving_before:
-            if self.engine_channel is None or not self.engine_channel.get_busy():
-                # play looped with fade-in
+        #engine sounds fade in/out
+        moving = abs(self.current_velocity) > 0.01
+        was_moving = abs((self.x - self.previous_x) / dt) > 0.01 if dt > 0 else False
+        if moving and not was_moving:
+            if not self.engine_channel:
                 self.engine_channel = self.engine_sound.play(loops=-1, fade_ms=self.engine_fade_ms)
+        elif not moving and was_moving and self.engine_channel:
+            self.engine_channel.fadeout(self.engine_fade_ms)
+            self.engine_channel = None
 
-        # Stopped moving this frame: fade out
-        if not moving_now and moving_before:
-            if self.engine_channel is not None:
-                self.engine_channel.fadeout(self.engine_fade_ms)
-                self.engine_channel = None
+        self.previous_x, self.previous_y = self.x, self.y
 
-        target_wake_fade = smoothstep(0.0, 0.2, abs(self.current_velocity))
-        if target_wake_fade > self.wake_fade:
-            self.wake_fade = min(self.wake_fade + 3.5 * dt, target_wake_fade)
-        else:
-            self.wake_fade = max(self.wake_fade - 3.5 * dt, target_wake_fade)
+        speed_multiplier = self.speed if self.current_velocity >= 0 else self.backward_speed
+        self.x += math.cos(self.rotation) * speed_multiplier * self.current_velocity * dt
+        self.y += math.sin(self.rotation) * speed_multiplier * self.current_velocity * dt
 
-        if self.current_velocity > 0:
-            self.x += math.cos(self.rotation) * self.speed * self.current_velocity * dt
-            self.y += math.sin(self.rotation) * self.speed * self.current_velocity * dt
-        elif self.current_velocity < 0:
-            self.x += math.cos(self.rotation) * self.backward_speed * self.current_velocity * dt
-            self.y += math.sin(self.rotation) * self.backward_speed * self.current_velocity * dt
-
-        self.velocity_x = (self.x - self.previous_x) / (dt + 1e-6)
-        self.velocity_y = (self.y - self.previous_y) / (dt + 1e-6)
-
+        #clamp to world
         self.x = max(0.5, min(WORLD_WIDTH - 0.5, self.x))
         self.y = max(0.5, min(WORLD_HEIGHT - 0.5, self.y))
 
+        #cam follow
         self.camera_x += (self.x - self.camera_x) * self.camera_smoothing
         self.camera_y += (self.y - self.camera_y) * self.camera_smoothing
 
+        target_wake = smoothstep(0.0, 0.25, abs(self.current_velocity))
+        self.wake_fade += (target_wake - self.wake_fade) * 6.0 * dt
+
     def stop(self):
-        """Stops all sounds associated with the player."""
-        if self.motor_sound:
-            self.motor_sound.stop()
-        if self.engine_channel:
-            self.engine_channel.stop()
+        if self.motor_sound: self.motor_sound.stop()
+        if self.engine_channel: self.engine_channel.stop()

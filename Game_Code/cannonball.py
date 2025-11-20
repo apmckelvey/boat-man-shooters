@@ -7,24 +7,21 @@ class CannonBall:
         self.y = y
         self.rotation = rotation
         self.side = side
-        self.speed = 1
+        self.speed = 1.2
         self.lifetime = 5.0
         self.age = 0.0
 
         try:
-            self.image = pygame.image.load("../Graphics/Sprites/cannonball.png").convert_alpha()
-            self.image = pygame.transform.scale(self.image, (24, 24))
-            print("Loaded cannonball.png successfully")
-        except Exception as e:
-            print(f"Could not load cannonball.png: {e}")
+            img = pygame.image.load("../Graphics/Sprites/cannonball.png").convert_alpha()
+            self.image = pygame.transform.scale(img, (32, 32))
+        except:
             self.image = pygame.Surface((32, 32), pygame.SRCALPHA)
-            pygame.draw.circle(self.image, (200, 200, 200), (16, 16), 12)
-            pygame.draw.circle(self.image, (150, 150, 150), (16, 16), 10)
+            pygame.draw.circle(self.image, (200, 200, 200), (16, 16), 16)
 
-        offset_distance = 0.15
-        angle_offset = 1 if side == "left" else -1
-
+        offset_distance = 0.18
+        angle_offset = 1.5 if side == "left" else -1.5
         spawn_angle = rotation + angle_offset
+
         self.x += math.cos(spawn_angle) * offset_distance
         self.y += math.sin(spawn_angle) * offset_distance
 
@@ -36,5 +33,3 @@ class CannonBall:
         self.y += self.velocity_y * dt
         self.age += dt
         return self.age < self.lifetime
-
-
