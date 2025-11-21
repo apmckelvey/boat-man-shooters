@@ -14,7 +14,6 @@ The `vertex_shader` OpenGL code starts by telling OpenGL to use `OpenGL Shading 
 - `v_world_pos` is the output world-space position for each vertex
 - `cameraPos` is the camera position in the world
 - `viewportSize` is how wide and tall the visible area is in world units. In `main()`, the shader computes `v_uv` and `v_world_pos` using these values, then sets `gl_Position` so the quad covers the screen.
-
 ```GLSL
 #version 330
 in vec2 in_vert;
@@ -89,7 +88,7 @@ float hash(vec2 p) {
 }
 ```
 
-Another helper function called `noise()` is defined, which uses `hash()` to generate a smooth noise function. Instead of returning completely random values at each point, it interpolates between nearby `hash()` values so that the output changes gradually as the input `vec2` moves, creating a continuous, “blobby” noise pattern that is useful for natural-looking effects for the waves.
+A function called `noise()` is defined, which uses `hash()` to generate a smooth noise function. Instead of returning completely random values at each point, it interpolates between nearby `hash()` values so that the output changes gradually as the input `vec2` moves, creating a continuous, “blobby” noise pattern that is useful for natural-looking effects for the waves.
 ```GLSL
 float noise(vec2 p) {
     vec2 i = floor(p);
@@ -103,7 +102,7 @@ float noise(vec2 p) {
 }
 ```
 
-
+A function called `fbm()` is defined, which uses `noise()` to generate a *fractal brownian motion* (FBM) noise function. *FBM* is a type of noise function that combines multiple noise functions to create a more natural-looking result. 
 ```GLSL
 float fbm(vec2 p) {
     float v = 0.0;
@@ -117,7 +116,7 @@ float fbm(vec2 p) {
     return v;
 }
 ```
-
+A function called `rotate2D()` is defined, which rotates a vector by a given angle in radians.
 ```GLSL
 vec2 rotate2D(vec2 p, float angle) {
     float c = cos(angle);
@@ -126,6 +125,7 @@ vec2 rotate2D(vec2 p, float angle) {
 }
 ```
 
+A function, `unifiedRipples()`, is defined, which generates a ripple effect that combines three different ripple functions.
 ```GLSL
 float unifiedRipples(vec2 p, vec2 boatPos, float t, float speed) {
     float dist = length(p - boatPos);
@@ -138,7 +138,7 @@ float unifiedRipples(vec2 p, vec2 boatPos, float t, float speed) {
     return base * fade * mix(0.5, 0.35, smoothstep(0.0, 0.5, speed));
 }
 ```
-
+A function called `wakePattern()` is defined, which generates a wave-like effect that combines three different wave functions.
 ```GLSL
 float wakePattern(vec2 p, vec2 boatPos, float boatRot, float speed, float t) {
     vec2 localP = p - boatPos;
@@ -155,6 +155,7 @@ float wakePattern(vec2 p, vec2 boatPos, float boatRot, float speed, float t) {
 }
 ```
 
+A function called `bowWave()` is defined, which generates a wave-like effect that combines three different wave functions.
 ```GLSL
 float bowWave(vec2 p, vec2 boatPos, float boatRot, float speed, float t) {
     vec2 localP = p - boatPos;
@@ -167,13 +168,32 @@ float bowWave(vec2 p, vec2 boatPos, float boatRot, float speed, float t) {
     return wave * smoothstep(0.15, 0.0, dist) * backFade * 0.25 * speed;
 }
 ```
+> **NOTE:** `unifiedRipples()`, `wakePattern()`, and `bowWave()` are all different functions that generate different effects.
 
+| Function                   | `unifiedRipples()`                                                                                   | `wakePattern()`                                                   | `bowWave()`                                                             |
+|----------------------------|------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|-------------------------------------------------------------------------|
+| Primary visual role        | Circular ripples expanding from the boat's current position                                          | Classic V-shaped Kelvin wake trailing behind the moving boat      | Forward-breaking bow wave / displacement wave at the front of the boat  |
+| Placement                  | Centered directly on `boatPos` (isotropic; depends on perspective)                                   | Behind the boat (uses boat rotation, fades in front)              | In front of the boat (uses boat rotation, fades behind)                 |
+| Direction-aware?           | No (rotationally symmetric)                                                                          | Yes – creates the characteristic angled wake arms                 | Yes – strongest directly ahead, uses polar angle for spray-like details |
+| Typical blend mode / usage | Usually added to normal perturbation (minor deviation from a path) or height for general disturbance | Added/subtracted from height + used for foam/whitecap mask        | Strong normal perturbation + bright foam line at the bow                |
+| Speed influence            | Scales overall intensity mildly (mix 0.35–0.5)                                                       | Directly multiplies output (stronger speed → wider/stronger wake) | Directly multiplies output (stronger at higher speed)                   |
+| Best speed range           | Works from almost stopped to fast                                                                    | Most visible at medium-to-high speed (V shape needs velocity)     | Most visible at medium-to-high speed (bow wave collapses when stopped)  |
+| Includes foam?             | No explicit foam (only small noise)                                                                  | Yes – explicit foam threshold on the crests                       | Yes – bright crests act as foam/spray                                   |
+
+The shader then defines a function called `posterizeColor()`, which takes a color and a number of levels, and returns a color with each color component rounded down to the nearest integer value.
 ```GLSL
 vec3 posterizeColor(vec3 color, float levels) {
     return floor(color * levels) / levels;
 }
 ```
 
+Finally, the shader calculates the output color of the fragment based on the input variables:
+- `pos` is the position of the fragment in world units
+- `swayX` is a value between -0.008 and 0.008 that determines the boat's sway in the X direction
+- `swayY` is a value between -0.012 and 0.012 that determines the boat's sway in the Y direction
+- `swayRotation` is a value between -0.08 and 0.08 that determines the boat's sway rotation
+- `boatPos` is the position of the boat in world units
+- `boatSpeed` is the speed of the boat in world units per second
 ```GLSL
 void main() {
     vec2 pos = v_world_pos * 3.0;
@@ -184,21 +204,18 @@ void main() {
     float boatSpeed = length(boatVelocity);
 ```
 
+The shader now builds the complete water height field by first adding large-scale background ocean waves generated from multiple layered FBM noise calls. It then adds the local player's circular ripples (always visible) and speed-dependent wake/bow effects. Finally, it loops through every other player in the match and adds their disturbances too, including a small rocking animation so remote boats don't look frozen, creating fully interactive multiplayer water where every boat pushes real, overlapping waves.
 ```GLSL
     float wave1 = fbm(pos + vec2(time * 0.2, time * 0.15));
     float wave2 = fbm(pos * 1.3 - vec2(time * 0.15, time * 0.25));
     float wave3 = fbm(pos * 1.8 + vec2(time * 0.08, -time * 0.2));
     float waves = (wave1 + wave2 * 0.6 + wave3 * 0.4) / 2.0;
-```
 
-```GLSL
     waves += unifiedRipples(v_world_pos, boatPos, time, boatSpeed);
     float wakeStrength = smoothstep(0.0, 0.2, boatSpeed) * wakeFade * 0.6;
     waves += (wakePattern(v_world_pos, boatPos, -boatRotation, boatSpeed * 3.0, time)
              + bowWave(v_world_pos, boatPos, -boatRotation, boatSpeed * 2.5, time)) * wakeStrength;
-```
 
-```GLSL
     for (int i = 0; i < numOtherPlayers; i++) {
         int idx = i * 2;
         vec2 othPos = vec2(otherBoatPositions[idx], otherBoatPositions[idx+1]);
@@ -211,9 +228,7 @@ void main() {
         waves += unifiedRipples(v_world_pos, othPosSway, time, othSpeed) * 0.9;
         waves += wakePattern(v_world_pos, othPosSway, -othRot, othSpeed * 2.5, time) * 0.75;
     }
-```
 
-```GLSL
     waves = floor(waves * 6.0) / 6.0;
 
     vec3 deepWater = vec3(0.0, 0.35, 0.75);
@@ -231,6 +246,7 @@ void main() {
     waterColor = posterizeColor(waterColor, 10.0);
 ```
 
+The shader then checks if the boat is in the water, and if so, it applies a water color to the fragment based on the output of the previous calculations.
 ```GLSL
     vec2 boatUV = v_world_pos - boatPos;
     boatUV = rotate2D(boatUV, -boatRotation + swayRotation);
@@ -241,6 +257,10 @@ void main() {
     }
 ```
 
+Finally, the shader composites all other players’ boats on top of the water surface and outputs the final fragment color. This loop draws every remote/multiplayer boat as a simple 2D sprite (billboard) that is affected by:
+- Boat position and rotation received from the server/network
+- Gentle rocking animation so boats don’t look static
+- Proper alpha blending with the underlying water
 ```GLSL
     for (int i = 0; i < numOtherPlayers; i++) {
         int idx = i * 2;
