@@ -62,6 +62,8 @@ cannon_balls = []
 L_Can_fire = True
 R_Can_fire = True
 cooldown = 1.0
+L_cooldown_end = 0.0
+R_cooldown_end = 0.0
 
 #trigger rest values (calibrated on first frame)
 lt_rest = None
@@ -69,7 +71,7 @@ rt_rest = None
 
 async def main():
     global game_state, player, network, prediction, item_manager
-    global L_Can_fire, R_Can_fire, lt_rest, rt_rest, cannon_balls
+    global L_Can_fire, R_Can_fire, lt_rest, rt_rest, cannon_balls, L_cooldown_end, R_cooldown_end
 
     fullscreen = False
     running = True
@@ -108,6 +110,7 @@ async def main():
                             cannon_balls.append(new_ball)
                             cannon_sound.play()
                             L_Can_fire = False
+                            L_cooldown_end = current_time + cooldown
                             pygame.time.set_timer(pygame.USEREVENT + 1, int(cooldown * 1000), loops=1)
 
                 #right canon (RT)
@@ -119,13 +122,16 @@ async def main():
                             cannon_balls.append(new_ball)
                             cannon_sound.play()
                             R_Can_fire = False
+                            R_cooldown_end = current_time + cooldown
                             pygame.time.set_timer(pygame.USEREVENT + 2, int(cooldown * 1000), loops=1)
 
             #cooldown reset
             if event.type == pygame.USEREVENT + 1:
                 L_Can_fire = True
+                L_cooldown_end = 0.0
             if event.type == pygame.USEREVENT + 2:
                 R_Can_fire = True
+                R_cooldown_end = 0.0
 
             #keyboard fallback cannons
             if event.type == pygame.KEYDOWN and game_state == "GAME":
@@ -133,11 +139,13 @@ async def main():
                     cannon_balls.append(CannonBall(player.x, player.y, player.rotation, "left"))
                     cannon_sound.play()
                     L_Can_fire = False
+                    L_cooldown_end = current_time + cooldown
                     pygame.time.set_timer(pygame.USEREVENT + 1, int(cooldown * 1000), loops=1)
                 if event.key == pygame.K_e and R_Can_fire:
                     cannon_balls.append(CannonBall(player.x, player.y, player.rotation, "right"))
                     cannon_sound.play()
                     R_Can_fire = False
+                    R_cooldown_end = current_time + cooldown
                     pygame.time.set_timer(pygame.USEREVENT + 2, int(cooldown * 1000), loops=1)
 
             #transition from menu to game
@@ -211,7 +219,15 @@ async def main():
                 renderer.draw_player_nametags(player, prediction.other_players_display, names=names, y_offset=90)
                 renderer.draw_minimap(player, prediction.other_players_display)
                 renderer.draw_sprint_bar(player)
-                renderer.draw_health_and_cannon_cd(player)
+                #remaining cooldown fraction; 1 = fully cooling, 0 = ready
+                left_frac = 0.0
+                right_frac = 0.0
+                if L_cooldown_end and L_cooldown_end > current_time:
+                    left_frac = min(max((L_cooldown_end - current_time) / cooldown, 0.0), 1.0)
+                if R_cooldown_end and R_cooldown_end > current_time:
+                    right_frac = min(max((R_cooldown_end - current_time) / cooldown, 0.0), 1.0)
+
+                renderer.draw_health_and_cannon_cd(player, left_cd_frac=left_frac, right_cd_frac=right_frac)
             except: pass
 
             #disconnected alert

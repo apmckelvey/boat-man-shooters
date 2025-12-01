@@ -746,7 +746,7 @@ void main() {
         except Exception as e:
             print(f"Error drawing cannon balls: {e}")
 
-    def draw_health_and_cannon_cd(self,player):
+    def draw_health_and_cannon_cd(self, player, left_cd_frac: float = 0.0, right_cd_frac: float = 0.0):
         try:
             from config import WIDTH, HEIGHT
         except Exception:
@@ -764,11 +764,50 @@ void main() {
         pygame.draw.rect(surf, (50,50,50,160), (x, y, box_width, box_height))
         pygame.draw.rect(surf, (255, 255, 255, 100), (x, y, box_width, box_height), 2)
 
-        #CD Bars
-        pygame.draw.rect(surf, (226, 140, 96, 180), (x + 20, y + 25, 20, 150)) #Left
-        pygame.draw.rect(surf, (255, 255, 255, 100), (x + 20, y + 25, 20, 150), 2) #Left
-        pygame.draw.rect(surf, (226, 140, 96, 180), (x + 160, y + 25, 20, 150)) #Right
-        pygame.draw.rect(surf, (255, 255, 255, 100), (x + 160, y + 25, 20, 150), 2) #Right
+        #CD Bars visualising cooldown remaining (left_cd_frac/right_cd_frac: 1.0 = full cooldown)
+        cd_bar_height = 150
+        cd_bar_w = 20
+        left_x = x + 20
+        right_x = x + 160
+        top_y = y + 25
+
+        #draw background for both bars
+        pygame.draw.rect(surf, (226, 140, 96, 80), (left_x, top_y, cd_bar_w, cd_bar_height))
+        pygame.draw.rect(surf, (226, 140, 96, 80), (right_x, top_y, cd_bar_w, cd_bar_height))
+        #borders
+        pygame.draw.rect(surf, (255, 255, 255, 100), (left_x, top_y, cd_bar_w, cd_bar_height), 2)
+        pygame.draw.rect(surf, (255, 255, 255, 100), (right_x, top_y, cd_bar_w, cd_bar_height), 2)
+
+        def draw_cd_bar(base_x, frac):
+            #frac in 0...1 where 1.0 means still cooling and 0.0 ready
+            frac = max(0.0, min(1.0, float(frac)))
+            fill_h = int((1.0 - frac) * cd_bar_height)
+            fill_y = top_y + (cd_bar_height - fill_h)
+
+            #color: green when ready, otherwise orange->red based on remaining fraction
+            if frac <= 0.001:
+                color = (60, 220, 80, 220)
+            else:
+                #orange -> red
+                r = int(226 * (1.0 - frac) + 240 * frac)
+                g = int(140 * (1.0 - frac) + 80 * frac)
+                b = int(96 * (1.0 - frac) + 80 * frac)
+                color = (r, g, b, 220)
+
+            if fill_h > 0:
+                pygame.draw.rect(surf, color, (base_x, fill_y, cd_bar_w, fill_h))
+
+            #draw a small label below each bar - % or ready
+            try:
+                label = 'READY' if frac <= 0.001 else f"{int(frac*100)}%"
+                if self.nametag_font:
+                    lbl_surf, _ = self.nametag_font.render(label, (255, 255, 255))
+                    surf.blit(lbl_surf, lbl_surf.get_rect(center=(base_x + cd_bar_w // 2, top_y + cd_bar_height + 14)))
+            except Exception:
+                pass
+
+        draw_cd_bar(left_x, left_cd_frac)
+        draw_cd_bar(right_x, right_cd_frac)
 
 
 
