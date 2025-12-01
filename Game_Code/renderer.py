@@ -1055,8 +1055,17 @@ void main() {
         x = WIDTH - box_width - 20
         y = HEIGHT - box_height - 50
 
+        #Box
         pygame.draw.rect(surf, (50,50,50,160), (x, y, box_width, box_height))
         pygame.draw.rect(surf, (255, 255, 255, 100), (x, y, box_width, box_height), 2)
+
+        #CD Bars
+        pygame.draw.rect(surf, (226, 140, 96, 180), (x + 20, y + 25, 20, 150)) #Left
+        pygame.draw.rect(surf, (255, 255, 255, 100), (x + 20, y + 25, 20, 150), 2) #Left
+        pygame.draw.rect(surf, (226, 140, 96, 180), (x + 160, y + 25, 20, 150)) #Right
+        pygame.draw.rect(surf, (255, 255, 255, 100), (x + 160, y + 25, 20, 150), 2) #Right
+
+
 
         data = pygame.image.tostring(surf, 'RGBA', True)
         w, h = surf.get_size()
