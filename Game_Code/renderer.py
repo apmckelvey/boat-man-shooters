@@ -577,12 +577,12 @@ void main() {
         y = HEIGHT - bar_height - 20
 
         #draw background (empty bar)
-        pygame.draw.rect(surf, (19, 25, 67, 180), (x, y, bar_width, bar_height))
+        pygame.draw.rect(surf, (255, 0, 0, 180), (x, y, bar_width, bar_height))
         
         #draw foreground (sprint energy)
         current_width = (player.sprint / 100.0) * bar_width
         if current_width > 0:
-            pygame.draw.rect(surf, (226, 140, 96, 180), (x, y, current_width, bar_height))
+            pygame.draw.rect(surf, (0, 255, 0, 180), (x, y, current_width, bar_height))
 
         #add border for better visibility
         pygame.draw.rect(surf, (255, 255, 255, 100), (x, y, bar_width, bar_height), 2)

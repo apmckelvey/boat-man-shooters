@@ -30,8 +30,7 @@ class ButtonSubmit:
         self.hover_start = None
         self.wiggle_duration = 0.3 #seconds
         self.press_sound = pygame.mixer.Sound('../Assets/Sounds/Button Sounds/button-submit/button-submit-press.mp3')
-        self.unpress_sound = pygame.mixer.Sound(
-            '../Assets/Sounds/Button Sounds/button-submit/button-submit-unpress.mp3')
+        self.unpress_sound = pygame.mixer.Sound('../Assets/Sounds/Button Sounds/button-submit/button-submit-unpress.mp3')
 
     def update(self, events):
         mouse_pos = pygame.mouse.get_pos()
