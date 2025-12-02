@@ -775,8 +775,7 @@ void main() {
         pygame.draw.rect(surf, (226, 140, 96, 80), (left_x, top_y, cd_bar_w, cd_bar_height))
         pygame.draw.rect(surf, (226, 140, 96, 80), (right_x, top_y, cd_bar_w, cd_bar_height))
         #borders
-        pygame.draw.rect(surf, (255, 255, 255, 100), (left_x, top_y, cd_bar_w, cd_bar_height), 2)
-        pygame.draw.rect(surf, (255, 255, 255, 100), (right_x, top_y, cd_bar_w, cd_bar_height), 2)
+
 
         def draw_cd_bar(base_x, frac):
             #frac in 0...1 where 1.0 means still cooling and 0.0 ready
@@ -807,7 +806,8 @@ void main() {
         draw_cd_bar(left_x, left_cd_frac)
         draw_cd_bar(right_x, right_cd_frac)
 
-
+        pygame.draw.rect(surf, (255, 255, 255, 100), (left_x, top_y, cd_bar_w, cd_bar_height), 2)
+        pygame.draw.rect(surf, (255, 255, 255, 100), (right_x, top_y, cd_bar_w, cd_bar_height), 2)
 
         data = pygame.image.tobytes(surf, 'RGBA', True)
         w, h = surf.get_size()
