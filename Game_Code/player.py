@@ -31,6 +31,7 @@ class Player:
         self.previous_y = y
 
         self.sprint = SPRINT
+        self.display_sprint = SPRINT  # animated display value
         self.sprinting = False
 
         self.l3_pressed = False
@@ -99,6 +100,10 @@ class Player:
             self.sprinting = False
             if self.sprint < SPRINT:
                 self.sprint += dt * 12  # regen
+        
+        #smoothly animate display_sprint towards actual sprint value
+        sprint_smoothing = 0.15
+        self.display_sprint += (self.sprint - self.display_sprint) * sprint_smoothing
 
         # rotation
         self.target_rotation += turn_input * self.rotation_speed * dt

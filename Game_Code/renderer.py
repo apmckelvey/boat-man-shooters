@@ -563,9 +563,10 @@ void main() {
 
     def draw_sprint_bar(self, player):
         try:
-            from config import WIDTH, HEIGHT
+            from config import WIDTH, HEIGHT, SPRINT
         except Exception:
             WIDTH, HEIGHT = 1280, 720
+            SPRINT = 100
 
         #create transparent surface
         surf = self._get_overlay_surface()
@@ -577,12 +578,19 @@ void main() {
         y = HEIGHT - bar_height - 20
 
         #draw background (empty bar)
-        pygame.draw.rect(surf, (255, 0, 0, 180), (x, y, bar_width, bar_height))
+        pygame.draw.rect(surf, (226, 140, 96, 80), (x, y, bar_width, bar_height))
         
-        #draw foreground (sprint energy)
-        current_width = (player.sprint / 100.0) * bar_width
+        #draw foreground with color gradient based on sprint level
+        sprint_frac = player.display_sprint / SPRINT  # 0.0 to 1.0
+        current_width = sprint_frac * bar_width
+        
         if current_width > 0:
-            pygame.draw.rect(surf, (0, 255, 0, 180), (x, y, current_width, bar_height))
+            #color transitions smoothly from green (full) to red (empty)
+            r = int(225 * (1.0 - sprint_frac))
+            g = int(255 * sprint_frac)
+            color = (r, g, 0, 220)
+            
+            pygame.draw.rect(surf, color, (x, y, current_width, bar_height))
 
         #add border for better visibility
         pygame.draw.rect(surf, (255, 255, 255, 100), (x, y, bar_width, bar_height), 2)
