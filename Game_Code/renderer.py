@@ -848,7 +848,7 @@ void main() {
             return
 
 
-    def escape_menu(self,player,boolean):
+    def escape_menu(self,player):
         try:
             from config import WIDTH, HEIGHT
         except Exception:

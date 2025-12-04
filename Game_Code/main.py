@@ -216,8 +216,12 @@ async def main():
                 renderer.draw_sprint_bar(player)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE and inescape_menu is False:
-                        renderer.escape_menu(player, True)
                         inescape_menu = True
+
+                    elif event.key == pygame.K_ESCAPE and inescape_menu is True:
+                        inescape_menu = False
+                if inescape_menu:
+                    renderer.escape_menu(player)
                 #remaining cooldown fraction; 1 = fully cooling, 0 = ready
                 left_frac = 0.0
                 right_frac = 0.0
