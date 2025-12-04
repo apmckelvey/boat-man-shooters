@@ -849,53 +849,21 @@ void main() {
 
 
     def escape_menu(self,player,boolean):
+        print("Escape Menu")
+
         try:
-            from config import WIDTH, HEIGHT
+            surf = self._get_overlay_surface()
         except Exception:
-            WIDTH, HEIGHT = 1280, 720
-
-        surf = self._get_overlay_surface()
-
-        xcor = WIDTH
-        ycor = HEIGHT
+            print("Dih dont work")
+            pass
 
         text1 = "Settings"
-        print(text1)
-
-        if self.nametag_font:
-            try:
-                label_surf, _ = self.nametag_font.render("Settings", (255, 255, 255))
-                label_rect = label_surf.get_rect(center=( xcor//2,ycor//2)) #idk why this is the middle jus messed with it till it looked right
-                surf.blit(label_surf, label_rect)
-                print("Worked")
-            except Exception:
-                pass
-
-        #upload to GPU and render
-        data = pygame.image.tobytes(surf, 'RGBA', True)
-        w, h = surf.get_size()
 
         try:
-            if self.overlay_texture is None:
-                self.overlay_texture = self.ctx.texture((w, h), 4, data)
-                self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
-            else:
-                try:
-                    self.overlay_texture.write(data)
-                except Exception:
-                    self.overlay_texture.release()
-                    self.overlay_texture = self.ctx.texture((w, h), 4, data)
-                    self.overlay_texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
-
-            self.overlay_texture.use(location=2)
-            try:
-                self.overlay_program['overlayTexture'].value = 2
-            except Exception:
-                pass
-
-            self.ctx.enable(moderngl.BLEND)
-            self.overlay_vao.render(mode=moderngl.TRIANGLE_STRIP)
+            if self.nametag_font:
+                lbl_surf, _ = self.nametag_font.render(text1, (255, 255, 255))
+                surf.blit(lbl_surf, lbl_surf.get_rect(center=(0,0)))
+                print(lbl_surf.get_rect(center=(0,0)))
         except Exception:
-            return
-
-
+            print("Dih dont work")
+            pass
