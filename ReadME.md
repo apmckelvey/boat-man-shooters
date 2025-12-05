@@ -5,9 +5,12 @@
 </p>
 
 <p align="center">
-<a href="https://www.apmckelvey.github.io/boat-man-shooters/">Click to Download</a>
+  <a href="https://apmckelvey.github.io/boat-man-shooters/">
+    <img src="https://img.shields.io/badge/DOWNLOAD%20BOAT%20MAN%20SHOOTERS-1C7CFF?style=for-the-badge&logo=github&logoColor=white&labelColor=0969da" 
+         alt="DOWNLOAD BOAT MAN SHOOTERS" 
+         height="100">
+  </a>
 </p>
-
 
 ## Table of Contents
 
