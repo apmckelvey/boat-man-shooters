@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-<a href="www.https://apmckelvey.github.io/boat-man-shooters/">Click to Download</a>
+<a href="https://www.apmckelvey.github.io/boat-man-shooters/">Click to Download</a>
 </p>
 
 
