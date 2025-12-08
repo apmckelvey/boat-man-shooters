@@ -23,13 +23,30 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install nuitka
 
-      # macOS build – your exact command, just without the local path
+      # ---------- ccache / clcache setup ----------
+
+      - name: Install and cache ccache (Ubuntu/macOS)
+        if: matrix.os != 'windows-latest'
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{ runner.os }}-ccache-boat-man-shooters
+
+      - name: Install clcache (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          python -m pip install clcache
+          # Put clcache.exe on PATH
+          setx PATH "%USERPROFILE%\.local\bin;%PATH%"
+        shell: cmd
+
+      # ---------- macOS build ----------
+
       - name: Build macOS app bundle
         if: matrix.os == 'macos-latest'
         run: |
@@ -47,8 +64,9 @@ jobs:
             --output-dir=dist \
             Game_Code/main.py
 
-      # Linux build – standalone onefile binary
-      - name: Build Linux binary
+      # ---------- Linux build ----------
+
+      - name: Build Linux onefile binary
         if: matrix.os == 'ubuntu-latest'
         run: |
           cd "${{ github.workspace }}"
@@ -63,7 +81,8 @@ jobs:
             --output-dir=dist \
             Game_Code/main.py
 
-      # Windows build – PowerShell syntax, no Bash if/[]
+      # ---------- Windows build ----------
+
       - name: Build Windows exe
         if: matrix.os == 'windows-latest'
         shell: pwsh
@@ -72,6 +91,7 @@ jobs:
           python -m nuitka --standalone `
             --onefile `
             --product-name="Boat Man Shooters" `
+            --file-version=1.0.0 `
             --include-data-dir=Assets=Assets `
             --include-data-dir=Graphics=Graphics `
             --include-data-dir=Logos=Logos `
@@ -81,10 +101,12 @@ jobs:
             --output-dir=dist `
             Game_Code/main.py
 
-      - name: Show dist contents
+      # ---------- Artifacts ----------
+
+      - name: List dist
         run: |
           cd "${{ github.workspace }}"
-          ls -R dist || echo "dist not found"
+          ls -R dist || echo "dist missing"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

@@ -2,7 +2,6 @@
 import pygame
 import moderngl
 import asyncio
-from pygame import RESIZABLE
 import math
 import random
 
@@ -45,7 +44,7 @@ pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
 pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
 pygame.display.gl_set_attribute(pygame.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, True)
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF | RESIZABLE)
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF )
 clock = pygame.time.Clock()
 ctx = moderngl.create_context()
 renderer = Renderer(ctx)
@@ -180,15 +179,6 @@ async def main():
                     cannon_balls = []
                     print(f"{network.PLAYER_NAME} joined game")
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_f:
-                    fullscreen = not fullscreen
-                    flags = pygame.OPENGL | pygame.DOUBLEBUF
-                    if fullscreen:
-                        flags |= pygame.FULLSCREEN
-                    else:
-                        flags |= RESIZABLE
-                    pygame.display.set_mode((WIDTH, HEIGHT), flags)
 
         #game loop
         if game_state == "MENU":
