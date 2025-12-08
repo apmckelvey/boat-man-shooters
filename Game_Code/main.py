@@ -152,9 +152,9 @@ async def main():
                     if event.key == pygame.K_ESCAPE and not escape_was_pressed:
                         inescape_menu = not inescape_menu
                         escape_was_pressed = True
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_ESCAPE:
-                        escape_was_pressed = False
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    escape_was_pressed = False
             #transition from menu to game
 
             if game_state == "MENU" and event.type == pygame.MOUSEBUTTONDOWN:
