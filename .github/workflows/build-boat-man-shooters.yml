@@ -29,7 +29,7 @@ jobs:
           pip install -r requirements.txt
           pip install nuitka
 
-      # ---------- macOS build (your local command) ----------
+      # macOS: app bundle (matches your local command)
       - name: Build macOS app bundle
         if: matrix.os == 'macos-latest'
         run: |
@@ -47,7 +47,7 @@ jobs:
             --output-dir=dist \
             Game_Code/main.py
 
-      # ---------- Linux build (standalone + onefile) ----------
+      # Linux: standalone onefile
       - name: Build Linux onefile binary
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -63,14 +63,14 @@ jobs:
             --output-dir=dist \
             Game_Code/main.py
 
-      # ---------- Windows build (standalone + onefile) ----------
+      # Windows: standalone onefile, auto-accept Dependency Walker download
       - name: Build Windows exe
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           Set-Location "${{ github.workspace }}"
 
-          # Auto-accept required tool downloads (Dependency Walker, etc.)
+          # Always answer “Yes” to tool downloads (Dependency Walker, etc.)
           $env:NUITKA_ASSUME_YES_FOR_DOWNLOADS = "1"
 
           python -m nuitka --standalone `
@@ -86,7 +86,6 @@ jobs:
             --output-dir=dist `
             Game_Code/main.py
 
-      # ---------- Artifacts ----------
       - name: List dist
         run: |
           cd "${{ github.workspace }}"
