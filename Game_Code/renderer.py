@@ -283,25 +283,25 @@ void main() {
                     self.overlay_font_large = pygame.freetype.Font(found_ttf, 63)
                     self.overlay_font_small = pygame.freetype.Font(found_ttf, 27)
                     self.nametag_font = pygame.freetype.Font(found_ttf, 18)
-                    self.setting_font = pygame.freetype.Font(found_ttf, 25)
+                    self.setting_font = pygame.freetype.Font(found_ttf, 40)
                 except Exception:
                     # fallback to SysFont lookup
                     self.overlay_font_large = pygame.freetype.SysFont("DynaPuff", 63)
                     self.overlay_font_small = pygame.freetype.SysFont("DynaPuff", 27)
                     self.nametag_font = pygame.freetype.SysFont("DynaPuff", 18)
-                    self.setting_font = pygame.freetype.SysFont("DynaPuff", 25)
+                    self.setting_font = pygame.freetype.SysFont("DynaPuff", 40)
             else:
                 # prefer DynaPuff via system font name, fallback to default
                 try:
                     self.overlay_font_large = pygame.freetype.SysFont("DynaPuff", 63)
                     self.overlay_font_small = pygame.freetype.SysFont("DynaPuff", 27)
                     self.nametag_font = pygame.freetype.SysFont("DynaPuff", 18)
-                    self.setting_font = pygame.freetype.SysFont("DynaPuff", 25)
+                    self.setting_font = pygame.freetype.SysFont("DynaPuff", 40)
                 except Exception:
                     self.overlay_font_large = pygame.freetype.SysFont(None, 63)
                     self.overlay_font_small = pygame.freetype.SysFont(None, 27)
                     self.nametag_font = pygame.freetype.SysFont(None, 18)
-                    self.setting_font = pygame.freetype.SysFont(None, 25)
+                    self.setting_font = pygame.freetype.SysFont(None, 40)
         except Exception:
             self.overlay_font_large = None
             self.overlay_font_small = None
@@ -860,7 +860,7 @@ void main() {
         xcor = WIDTH
         ycor = HEIGHT
 
-        list_of_buttons = ["Menu", "Settings", "Cancel"]
+        list_of_buttons = ["Main Menu", "Settings", "Cancel", "Quit"]
         settings_image = pygame.image.load("../Logos/logo-borderless.png").convert_alpha()
         resized_image = pygame.transform.smoothscale(settings_image, (350, 350))
         menu_rect = surf.get_rect(center=(WIDTH // 1.17, HEIGHT // 2.25))
@@ -875,10 +875,10 @@ void main() {
             if self.setting_font:
                 try:
                     shadow_surf, _ = self.setting_font.render(list_of_buttons[i], (0, 0, 0))
-                    shadow_rect = shadow_surf.get_rect(center=(xcor // 2 + 2, ycor // 2 - i * 40 + 2))
+                    shadow_rect = shadow_surf.get_rect(center=(xcor // 2 + 2, ycor // 2 + i * 60 - 62))
                     surf.blit(shadow_surf, shadow_rect)
                     label_surf, _ = self.setting_font.render(list_of_buttons[i], (255, 255, 255))
-                    label_rect = label_surf.get_rect(center=(xcor // 2, ycor // 2 - i * 40))
+                    label_rect = label_surf.get_rect(center=(xcor // 2, ycor // 2 + i * 60 - 60))
                     surf.blit(label_surf, label_rect)
                 except Exception:
                     pass
