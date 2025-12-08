@@ -6,6 +6,7 @@
   <title>Boat Man Shooters</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png" sizes="1024x1024">
 </head>
 <body>
 
@@ -16,39 +17,62 @@
   <div class="container">
     <header>
       <img class="logo" src="logo.png" alt="Boat Man Shooters Logo">
-      <h1>Boat Man Shooters</h1>
-      <p class="tagline">An online, multiplayer boat combat game. (Work in Progress)</p>
+      <h1 class="main-title">Boat Man Shooters</h1>
+      <p class="tagline">An online, multiplayer boat combat game. <em>(Still a beautiful disaster)</em></p>
     </header>
+
+    <section class="install-instructions">
+      <h2>How to Play (When Binaries Actually Exist)</h2>
+      <div class="install-grid">
+        <div class="install-card">
+          <img src="windows-logo.png" alt="Windows" class="install-icon">
+          <h3>Windows</h3>
+          <p>Download <code>BoatManShooters.exe</code><br>Double-click and dominate.</p>
+        </div>
+        <div class="install-card">
+          <img src="macos-logo.png" alt="macOS" class="install-icon">
+          <h3>macOS</h3>
+          <p>Download <code>BoatManShooters.zip</code><br>Unzip → move <code>BoatManShooters.app</code> to Applications → run.</p>
+        </div>
+        <div class="install-card">
+          <img src="linux-logo.png" alt="Linux" class="install-icon os-icon-linux">
+          <h3>Linux</h3>
+          <p>Download <code>BoatManShooters.AppImage</code><br><code>chmod +x BoatManShooters.AppImage</code> → run → profit.</p>
+        </div>
+      </div>
+      <p class="install-note">
+        <strong>Current reality:</strong> These don't exist yet.<br>
+        For now: <code>git clone</code> the repo and run <code>python main.py</code>.<br>
+        <em>Yes, you need Python. Yes, it's worth it.</em>
+      </p>
+    </section>
 
     <section class="downloads">
       <div class="card">
         <img src="windows-logo.png" alt="Windows Logo" class="os-icon">
         <h3>Windows</h3>
-        <p class="size">Build from source (WIP)</p>
-        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Build</a>
-        <p class="note">No .exe yet — coming soon!</p>
+        <p class="size">Coming eventually</p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Run</a>
+        <p class="note">python main.py — you're welcome</p>
       </div>
-
       <div class="card">
         <img src="macos-logo.png" alt="macOS Logo" class="os-icon">
         <h3>macOS</h3>
-        <p class="size">Build from source (WIP)</p>
-        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Build</a>
-        <p class="note">No .dmg yet — coming soon!</p>
+        <p class="size">Coming eventually</p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Run</a>
+        <p class="note">brew install python && python3 main.py</p>
       </div>
-
       <div class="card">
         <img src="linux-logo.png" alt="Linux Logo" class="os-icon os-icon-linux">
         <h3>Linux</h3>
-        <p class="size">Build from source (WIP)</p>
-        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Build</a>
-        <p class="note">No .AppImage yet — coming soon!</p>
+        <p class="size">Coming eventually</p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Run</a>
+        <p class="note">You got this. Just don't forget pip.</p>
       </div>
-
       <div class="card source-code-card">
         <img src="logo.png" alt="Source Code Logo" class="os-icon source-icon-circle">
         <h3>Source Code</h3>
-        <p class="size">For the brave (or masochistic)</p>
+        <p class="size">Available now</p>
         <a href="https://github.com/apmckelvey/boat-man-shooters/archive/refs/heads/main.zip" class="dl-btn dl-source" target="_blank">source.zip</a>
         <a href="https://github.com/apmckelvey/boat-man-shooters/archive/refs/heads/main.tar.gz" class="dl-btn dl-source mt-2" target="_blank">source.tar.gz</a>
         <p class="note">You know you want to fix my bugs!</p>
@@ -58,15 +82,24 @@
     <h2 class="section-title">Key Features</h2>
     <section class="features">
       <div class="feature-card done"><h4>Online multiplayer game</h4><p>Constant lobby, real-time chaos, leaderboard that actually works.</p></div>
-      <div class="feature-card wip"><h4>Account system</h4><p>Eventually you'll be able to prove you're not just "Guest_420".</p><span class="status-tag">Coming Soon™</span></div>
-      <div class="feature-card done"><h4>Fluid UI interface/animations</h4><p>Looks smooth until you realize half the buttons don't do anything yet.</p></div>
+      <div class="feature-card wip"><h4>Account system</h4><p>Eventually you'll be able to prove you're not just "Guest_420".</p><span class="status-tag">Coming Soon</span></div>
+      <div class="feature-card wip"><h4>Fluid UI interface/animations</h4><p>Looks smooth until you realize half the buttons don't do anything yet.</p><span class="status-tag">Coming Soon</span></div>
       <div class="feature-card done"><h4>Sounds and background music</h4><p>Cannons go boom. Boats go brrr. Music slaps.</p></div>
-      <div class="feature-card wip"><h4>Both keyboard and controller input</h4><p>Keyboard works. Controller support is "planned" (I own a controller now).</p><span class="status-tag">Coming Soon</span></div>
+      <div class="feature-card done"><h4>Both keyboard and controller input</h4><p>Keyboard works. And yes — controller support is now fully implemented!</p></div>
     </section>
 
     <footer>
-      <p>© 2025 Boat Man Shooters Project | License: MIT</p>
-      <p><a href="https://github.com/apmckelvey/boat-man-shooters" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub</a> • Wave</p>
+      <p>
+        © 2025 Boat Man Shooters —
+        <a href="https://github.com/apmckelvey/boat-man-shooters/blob/main/LICENSE"
+           target="_blank"
+           style="color:#131943;font-weight:bold;text-decoration:none;">
+          MIT License
+        </a>
+      </p>
+      <p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub</a> • Wave
+      </p>
     </footer>
   </div>
 
