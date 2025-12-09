@@ -47,20 +47,27 @@ This is a online multiple player game where the intention is to shoot other boat
 
 ## File Structure <a name="file_structure"></a>
 
-The game has the following structure:  
-├── .github &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***Configuration files for GitHub.***  
-├── Assets &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***Contains the font, music, and button sounds.***  
-├── Button-Test &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***HTML test for button animations.***  
-├── Game_Code &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***Contains all the game cod.e***  
-├── Graphics &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***Contains Map Items, Sprites, Butons, and Menus.***  
-├── Logos &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***All the logos and icons for our project.***  
-├── docs &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***Website for GitHub Pages.***  
-├── .gitignore &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***Tells GitHub to ignore specific files when commiting.***  
-├── requirements.txt &nbsp; &nbsp; &nbsp; ***Tells GitHub Dependabot what dependencies are needed to update.***  
-├── CODE_OF_CONDUCT.md &nbsp; &nbsp; &nbsp;***The code of conduct for this project.***  
-├── LICENSE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***The license for this project.***  
-├── MyIcon.icns &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;***The icon for this project used when building an app.***  
-└── ReadME.md &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ***This documentation file you are reading right now.***  
+# Project Structure
+
+```
+├── .github/                  GitHub configuration (workflows, issue templates, etc.)  
+├── Assets/                   Fonts, music, sound effects (button clicks, etc.)  
+├── Button-Test/              HTML test page for button animations  
+├── Game_Code/                Core game source code  
+├── Graphics/                 Visual assets  
+│   ├── Maps/                 Map tiles & items  
+│   ├── Sprites/              Character & object sprites  
+│   ├── Buttons/              UI buttons  
+│   └── Menus/                Game menus & screens  
+├── Logos/                    All project logos and icons  
+├── docs/                     GitHub Pages website source  
+├── .gitignore                Files and folders ignored by Git  
+├── requirements.txt          Python dependencies (for Dependabot)  
+├── CODE_OF_CONDUCT.md        Contributor Covenant Code of Conduct  
+├── LICENSE                   Project license  
+├── MyIcon.icns               macOS app icon  
+└── README.md                 You’re reading this right now!  
+```
 
 ## Logic <a name="logic"></a>
 <img src="Documentation/Game Logic Flowchart.png" alt="Game Logic Flowchart">
