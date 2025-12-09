@@ -4,10 +4,10 @@ import moderngl
 import asyncio
 import math
 import random
+import renderer
 
 #imports from other files
 from config import *
-from renderer import Renderer
 from player import Player
 from network import NetworkManager
 from prediction import PredictionManager
@@ -15,7 +15,7 @@ from items import ItemManager
 from cannonball import CannonBall
 
 pygame.init()
-
+game_state = renderer.game_state
 #controller initialization
 pygame.joystick.init()
 controller_joystick = None
@@ -47,10 +47,10 @@ pygame.display.gl_set_attribute(pygame.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, True)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF )
 clock = pygame.time.Clock()
 ctx = moderngl.create_context()
-renderer = Renderer(ctx)
+renderer = renderer.Renderer(ctx)
 
 #game state vars
-game_state = "MENU"
+
 player = None
 network = None
 prediction = None

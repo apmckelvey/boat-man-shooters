@@ -9,6 +9,8 @@ from pygame import Surface
 from config import WIDTH, HEIGHT
 from shaders import vertex_shader, fragment_shader
 
+game_state = "MENU"
+
 class Renderer:
     def __init__(self, ctx):
         self.ctx = ctx
@@ -898,6 +900,11 @@ void main() {
                 surf.blit(color_surf, color_rect)
                 if pygame.mouse.get_pressed()[0]:
                     print(word)
+                    if word == "Quit":
+                        pygame.quit()
+                    elif word == "Main Menu":
+                        game_state = "MENU"
+
 
 
         data = pygame.image.tobytes(surf, 'RGBA', True)
