@@ -260,7 +260,30 @@ This will create a folder called `dist` in the repository folder with the built 
 
 ### Option 2: Build-it-Yourself (macOS, Windows, Linux)
 
-explain how to use workflow file (`build-boat-man-shooters.yml`) to build the app for all operating systems
+You can use the repository's GitHub Actions workflow (`build-boat-man-shooters.yml`) to automatically build standalone executables for macOS, Windows, and Linux using Nuitka. This runs entirely in the cloud on GitHub's servers—no local installation, dependencies, or code changes required on your part.
+The workflow triggers automatically on pushes to the main branch and uploads the built apps as artifacts (downloadable files) to each workflow run.
+How to get the builds yourself (without editing the repo):
+
+1. Go to the repository's Actions tab: [https://github.com/apmckelvey/boat-man-shooters/actions](https://github.com/apmckelvey/boat-man-shooters/actions)
+
+2. In the left sidebar, select the workflow named Build Boat Man Shooters (Nuitka).
+
+3. You will see a list of past workflow runs. Look for the most recent successful run (marked with a green checkmark).
+
+4. Click on that run to open its details.
+
+5. Scroll down to the Artifacts section at the bottom of the page.
+
+6. Download the artifact that matches your operating system:
+ 
+macOS: a `.app` and the build data in a seperate folder
+Windows: an `.exe` and the build data in a seperate folder
+Linux: a `.bin` and the build data in a seperate folder
+
+7. Extract/unzip the downloaded artifact if necessary, then run the app directly.
+
+> *NOTE:* Artifacts are available for about 90 days after the run completes. Always use the most recent successful run for the latest build.
+> *NOTE:* New builds are only created when the repository owner pushes changes to the main branch. If no recent successful builds are available or you need one for the current code, you’ll need to ask the repository owner to trigger a new build (e.g., by making a small commit). Users cannot start the workflow manually without the owner enabling that feature.
 
 # Legal Stuff <a name="legal_stuff"></a>
 
