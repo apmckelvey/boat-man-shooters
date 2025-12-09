@@ -51,7 +51,9 @@ This is a online multiple player game where the intention is to shoot other boat
 
 ```
 ├── .github/                  GitHub configuration (workflows, issue templates, etc.)  
-├── Assets/                   Fonts, music, sound effects (button clicks, etc.)  
+├── Assets/                   Fonts, music, sound effects (button clicks, etc.)
+│   ├── DynaPuff Font/        Font files for text in game 
+│   └── Sounds/               Music, boat sounds, cannonball sound effects, etc.
 ├── Button-Test/              HTML test page for button animations  
 ├── Game_Code/                Core game source code  
 ├── Graphics/                 Visual assets  
