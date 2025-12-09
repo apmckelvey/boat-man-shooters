@@ -191,9 +191,14 @@ python3 /Game_Code/main.py
 ```
 
 ## How to Play (App) <a name="how_to_play"></a>
-Download the app from the releases page: [https://github.com/apmckelvey/boat-man-shooters/releases](https://github.com/apmckelvey/boat-man-shooters/releases)
 
-### Option 1: Build-it-Yoursef (macOS) From the Code
+### Option 1: Download Release
+
+Download the app for your desired operating system: 
+**Website:** [https://apmckelvey.github.io/boat-man-shooters/](https://apmckelvey.github.io/boat-man-shooters/)
+**Releases Page:** [https://github.com/apmckelvey/boat-man-shooters/releases](https://github.com/apmckelvey/boat-man-shooters/releases)  
+
+### Option 2: Build-it-Yoursef (macOS) From the Code
 
 1. Install the dependencies as described in section 3.1 as well as the dependency `nuitka`:
 
