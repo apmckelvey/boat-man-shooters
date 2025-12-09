@@ -47,8 +47,6 @@ This is a online multiple player game where the intention is to shoot other boat
 
 ## File Structure <a name="file_structure"></a>
 
-# Project Structure
-
 ```
 ├── .github/                  GitHub configuration (workflows, issue templates, etc.)  
 ├── Assets/                   Fonts, music, sound effects (button clicks, etc.)
