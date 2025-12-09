@@ -37,6 +37,7 @@ jobs:
           python3 -m nuitka --standalone \
             --macos-create-app-bundle \
             --macos-app-icon=MyIcon.icns \
+            --assume-yes-for-downloads \
             --product-name="Boat Man Shooters" \
             --macos-signed-app-name=com.apmckelvey.BoatManShooters \
             --include-data-dir=Assets=Assets \
@@ -55,6 +56,7 @@ jobs:
           python3 -m nuitka --standalone \
             --onefile \
             --product-name="Boat Man Shooters" \
+            --assume-yes-for-downloads \
             --include-data-dir=Assets=Assets \
             --include-data-dir=Graphics=Graphics \
             --include-data-dir=Logos=Logos \
