@@ -5,12 +5,9 @@ import numpy as np
 import pygame
 import pygame.freetype
 import os
-
 from pygame import Surface
-
 from config import WIDTH, HEIGHT
 from shaders import vertex_shader, fragment_shader
-
 
 class Renderer:
     def __init__(self, ctx):
@@ -862,7 +859,6 @@ void main() {
         xcor = WIDTH
         ycor = HEIGHT
 
-        list_of_buttons = ["Main Menu", "Settings", "Cancel", "Quit"]
         settings_image = pygame.image.load("../Logos/logo-borderless.png").convert_alpha()
         resized_image = pygame.transform.smoothscale(settings_image, (350, 350))
         menu_rect = surf.get_rect(center=(WIDTH // 1.17, HEIGHT // 2.25))
@@ -873,7 +869,9 @@ void main() {
             except Exception:
                 pass
 
+        list_of_buttons = ["Main Menu", "Settings", "Cancel", "Quit"]
         box_list = []
+        mouse_pos = pygame.mouse.get_pos()
 
         for i in range(len(list_of_buttons)):
             if self.setting_font:
@@ -890,19 +888,16 @@ void main() {
                 except Exception:
                     pass
 
-        mouse_pos = pygame.mouse.get_pos()
-
-        is_hovering = False
-
         for rects in box_list:
             if rects.collidepoint(mouse_pos):
                 text_color = (200, 200, 200)
-                word = "Main Menu"
                 index = box_list.index(rects)
+                word = list_of_buttons[index]
                 color_surf, _ = self.setting_font.render(word, text_color)
                 color_rect = color_surf.get_rect(center=(xcor // 2, ycor // 2 + index * 60 - 60))
                 surf.blit(color_surf, color_rect)
-
+                if pygame.mouse.get_pressed()[0]:
+                    print(word)
 
 
         data = pygame.image.tobytes(surf, 'RGBA', True)
