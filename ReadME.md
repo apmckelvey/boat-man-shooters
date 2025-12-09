@@ -76,7 +76,30 @@ This is a online multiple player game where the intention is to shoot other boat
 
 ## Code <a name="code"></a>
 
-Explain flow between files - tell reader that explainations of code can be found in deep dive.
+The game's codebase is modular and loosely follows the **Model-View-Controller (MVC)** pattern to keep concerns separated and the project maintainable:
+
+- **Model**: Manages game data and logic (players, projectiles, items, networking, prediction).
+- **View**: Handles all rendering and visual presentation (renderer, shaders, buttons).
+- **Controller**: Processes input, orchestrates the game loop, and ties everything together (primarily `main.py`).
+
+The files interact through targeted imports, shared constants (`config.py`), and utility functions (`utils.py`). Execution starts at `main.py`, which initializes systems, runs the central game loop (handling events → updates → networking → rendering), and manages scene transitions (menus → lobby → gameplay).
+
+**How the files work together**:
+
+- **`config.py`**: The foundation—defines global constants (screen dimensions, colors, speeds, Supabase credentials, asset paths). Imported by nearly every other file to ensure consistent settings and avoid hardcoding.
+- **`utils.py`**: Provides reusable helper functions (vector math, collision detection, angle calculations, distance checks). Imported by `player.py`, `cannonball.py`, `items.py`, `prediction.py`, and others for physics and logic calculations.
+- **`player.py`**: Defines the `Player` class (boat state: position, rotation, health, velocity). Handles local input, movement, and shooting (spawns cannonballs). Depends on `config.py`, `utils.py`, and `cannonball.py`. Instances are created/updated in `main.py` and synced via `network.py`.
+- **`cannonball.py`**: Defines the `Cannonball` projectile class (trajectory, speed, damage, lifetime). Created by `player.py` when shooting; updated in the main game loop. Uses `utils.py` for physics/collisions and interacts with `player.py` (applying damage on hit).
+- **`items.py`**: Manages pickups/power-ups on the map (position, type, effects like health restore). Updated in the main loop; players collect them via collision checks (using `utils.py`). May be synced over the network for fairness.
+- **`prediction.py`**: Implements client-side prediction and reconciliation to reduce perceived lag in multiplayer. Simulates future player/cannonball positions locally using `utils.py` math, then corrects based on authoritative data from `network.py`.
+- **`network.py`**: Handles all multiplayer communication with Supabase (authentication, real-time database sync for player positions, shots, lobby state). Called frequently in the main loop; serializes/deserializes model data (`player.py`, `cannonball.py`) and works closely with `prediction.py` for smooth movement.
+- **`shaders.py`**: Contains GLSL shader programs for advanced visual effects (water distortion, lighting, particles). Loaded and used exclusively by `renderer.py`.
+- **`renderer.py`**: The core View—uses ModernGL to draw everything: players, cannonballs, items, UI, backgrounds, and effects. Loads textures from Graphics/ and Assets/, applies shaders from `shaders.py`, and is called every frame by `main.py`.
+- **`buttons.py`**: Defines interactive UI buttons for menus (login, play, etc.), handling hover/click states, animations, and sound feedback. Drawn via `renderer.py` and processed in `main.py`'s event loop.
+- **`main.py`**: The primary Controller and entry point. Initializes Pygame/ModernGL, loads assets, sets up the window, authenticates via `network.py`, and runs the infinite game loop: process input/events, update model (players, cannonballs, items), sync/predict network state, render via `renderer.py`, and cap FPS.
+- **`multiplayer-tester.py`**: A standalone development tool that imports most of the above modules to simulate multiple clients or test networking/prediction in isolation (e.g., fake players). Not used in production but shares the same core logic.
+
+This structure ensures loose coupling: rendering changes don't affect physics, and multiplayer logic can be tested independently. All assets (Graphics/, Assets/) are loaded dynamically at runtime, primarily by `renderer.py` and `buttons.py`.
 
 # Usage <a name="usage"></a>
 
