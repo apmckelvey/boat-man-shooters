@@ -5,6 +5,7 @@ import asyncio
 import math
 import random
 import renderer
+
 # imports from other files
 from config import *
 from renderer import Renderer
@@ -73,29 +74,8 @@ inescape_menu = False
 escape_was_pressed = False
 
 
-def start_game_action():
-    """Callback function to start the game"""
-    global game_state, item_manager, player, network, prediction, cannon_balls
-    game_state = "GAME"
-    item_manager = ItemManager(num_items=15)
-    fallback_x, fallback_y = 2.0, 2.0
-    player = Player(fallback_x, fallback_y)
-
-    for _ in range(50):
-        random_x = random.randint(1, WORLD_WIDTH - 1)
-        random_y = random.randint(1, WORLD_HEIGHT - 1)
-        if not item_manager.check_collision(random_x, random_y, player_radius=0.5):
-            player = Player(random_x, random_y)
-            break
-
-    network = NetworkManager(player)
-    prediction = PredictionManager()
-    cannon_balls = []
-    print(f"{network.PLAYER_NAME} joined game")
-
-
 def open_settings_action():
-    """Callback function for settings button"""
+    """CALLBACK FUNCTION for settings button!!!!!!!!!!!!!!!"""
     print("Settings button clicked")
 
 
@@ -106,8 +86,14 @@ async def main():
     fullscreen = False
     running = True
     start_ticks = pygame.time.get_ticks()
+    loading_game = False
 
-    # Initialize menu buttons - positioned to fit within the dark menu panel
+    def set_loading_game(value):
+        nonlocal loading_game
+        loading_game = value
+
+    # initialize menu buttons - positioned to fit within the dark menu panel
+    # plz fix y'all
     menu_buttons = [
         ButtonSubmit(
             x=WIDTH // 2,
@@ -115,7 +101,7 @@ async def main():
             unpressed_path='../Graphics/UI Interface/Buttons/Join Game Button/join-game-button-unpressed.png',
             pressed_path='../Graphics/UI Interface/Buttons/Join Game Button/join-game-button-pressed.png',
             scale=0.32,
-            action=start_game_action
+            action=lambda: set_loading_game(True)
         ),
         ButtonSubmit(
             x=WIDTH // 2,
@@ -133,6 +119,7 @@ async def main():
             menu_boolean = False
             print(menu_boolean)
             game_state = "MENU"
+
         dt = clock.get_time() / 1000.0
         if dt <= 0:
             dt = 1.0 / TARGET_FPS
@@ -216,6 +203,27 @@ async def main():
 
         # game loop
         if game_state == "MENU":
+            if loading_game:
+                # Initialize game
+                item_manager = ItemManager(num_items=15)
+                fallback_x, fallback_y = 2.0, 2.0
+                player = Player(fallback_x, fallback_y)
+
+                for _ in range(50):
+                    random_x = random.randint(1, WORLD_WIDTH - 1)
+                    random_y = random.randint(1, WORLD_HEIGHT - 1)
+                    if not item_manager.check_collision(random_x, random_y, player_radius=0.5):
+                        player = Player(random_x, random_y)
+                        break
+
+                network = NetworkManager(player)
+                prediction = PredictionManager()
+                cannon_balls = []
+                print(f"{network.PLAYER_NAME} joined game")
+
+                game_state = "GAME"
+                loading_game = False
+
             # Update menu buttons with events
             for button in menu_buttons:
                 button.update(events)

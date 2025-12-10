@@ -1,12 +1,13 @@
-from operator import index
+#module imports
 import moderngl
 import numpy as np
 import pygame
 import pygame.freetype
 import os
-from pygame import Surface
+
+#imports from other filez
 from config import WIDTH, HEIGHT
-from shaders import vertex_shader, fragment_shader
+from shaders import vertex_shader, fragment_shader, overlay_fragment, overlay_vertex
 
 class Renderer:
     def __init__(self, ctx):
@@ -74,7 +75,7 @@ class Renderer:
             except Exception:
                 pass
 
-        # Draw menu buttons to the overlay surface BEFORE uploading to GPU
+        #draw menu buttons to the overlay surface BEFORE uploading to GPU
         if menu_buttons:
             for button in menu_buttons:
                 button.draw(surf)
@@ -191,28 +192,6 @@ class Renderer:
         self.vao = self.ctx.simple_vertex_array(self.program, vbo, 'in_vert')
 
     def _create_overlay_resources(self):
-
-        overlay_vertex = '''
-#version 330 core
-in vec2 in_vert;
-out vec2 v_uv;
-void main() {
-    v_uv = in_vert * 0.5 + 0.5;
-    gl_Position = vec4(in_vert, 0.0, 1.0);
-}
-'''
-
-        overlay_fragment = '''
-#version 330 core
-precision highp float;
-in vec2 v_uv;
-out vec4 fragColor;
-uniform sampler2D overlayTexture;
-void main() {
-    vec4 c = texture(overlayTexture, v_uv);
-    fragColor = c;
-}
-'''
 
         try:
             self.overlay_program = self.ctx.program(vertex_shader=overlay_vertex, fragment_shader=overlay_fragment)

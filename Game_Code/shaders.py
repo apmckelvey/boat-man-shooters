@@ -292,3 +292,25 @@ void main() {
     fragColor = vec4(waterColor, 1.0);
 }
 '''
+
+overlay_vertex = '''
+#version 330 core
+in vec2 in_vert;
+out vec2 v_uv;
+void main() {
+    v_uv = in_vert * 0.5 + 0.5;
+    gl_Position = vec4(in_vert, 0.0, 1.0);
+}
+'''
+
+overlay_fragment = '''
+#version 330 core
+precision highp float;
+in vec2 v_uv;
+out vec4 fragColor;
+uniform sampler2D overlayTexture;
+void main() {
+    vec4 c = texture(overlayTexture, v_uv);
+    fragColor = c;
+}
+'''
