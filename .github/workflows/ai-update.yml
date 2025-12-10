@@ -1,0 +1,44 @@
+name: Gemini AI Update
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch enough history for the git log/diff to work
+          fetch-depth: 5
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        # The script only needs the 'google-generativeai' library
+        run: pip install google-generativeai
+
+      - name: Run Gemini Generator
+        env:
+          # This securely loads the secret you must set in GitHub Settings
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/generate_summary.py
+
+      - name: Commit AI Summary
+        run: |
+          git config --global user.name 'Gemini Bot'
+          git config --global user.email 'bot@boatmanshooters.com'
+          # Add the generated JSON file, which is saved in the docs folder
+          git add docs/data/ai_summary.json
+          # Commit the change, but only if there was a change (|| exit 0 prevents failure)
+          git commit -m "update: Gemini AI summary" || exit 0
+          # Push the new file back to the main branch
+          git push

@@ -18,8 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setTheme(current === 'dark' ? 'light' : 'dark');
   });
 
-  // Fetch and display commits
+  // Fetch and display commits (MODIFIED to also fetch the summary)
   fetchCommits();
+  fetchAISummary();
 });
 
 async function fetchCommits() {
@@ -27,7 +28,8 @@ async function fetchCommits() {
   if (!timeline) return;
 
   try {
-    const response = await fetch('https://api.github.com/repos/apmckelvey/boat-man-shooters/commits?per_page=10');
+    // MODIFIED: Request only 3 commits
+    const response = await fetch('https://api.github.com/repos/apmckelvey/boat-man-shooters/commits?per_page=3');
     const commits = await response.json();
 
     if (!Array.isArray(commits) || commits.length === 0) {
@@ -36,7 +38,9 @@ async function fetchCommits() {
     }
 
     const ul = document.createElement('ul');
-    commits.forEach(commit => {
+
+    // Only display the 3 commits requested
+    commits.slice(0, 3).forEach(commit => {
       const li = document.createElement('li');
       const date = new Date(commit.commit.author.date).toLocaleDateString();
       li.innerHTML = `
@@ -50,5 +54,27 @@ async function fetchCommits() {
   } catch (error) {
     console.error('Error fetching commits:', error);
     timeline.innerHTML = '<p>Failed to load commit history.</p>';
+  }
+}
+
+// NEW FUNCTION: Fetches the AI-generated summary from the docs/data folder
+async function fetchAISummary() {
+  const aiCard = document.getElementById('ai-insight');
+  const aiText = document.getElementById('ai-text');
+
+  // The path 'data/ai_summary.json' is correct because main.js is in 'docs/'
+  try {
+    const response = await fetch('data/ai_summary.json');
+
+    if (!response.ok) throw new Error('No AI summary found');
+
+    const data = await response.json();
+    aiText.textContent = `"${data.summary}"`;
+    aiCard.style.display = 'block';
+
+  } catch (error) {
+    console.warn('AI Summary missing (This is normal on the first deploy):', error);
+    // Hide the card if no data exists yet
+    aiCard.style.display = 'none';
   }
 }

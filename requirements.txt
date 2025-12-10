@@ -5,3 +5,4 @@ asyncio
 uuid
 supabase
 numpy
+google-generativeai
