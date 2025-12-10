@@ -4,9 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boat Man Shooters</title>
+  <meta name="description" content="Boat Man Shooters is an online multiplayer boat combat game in development. Join the chaos with real-time battles and leaderboards.">
+  <meta name="keywords" content="boat man shooters, multiplayer game, boat combat, online game, pygame">
+  <meta property="og:title" content="Boat Man Shooters">
+  <meta property="og:description" content="An online, multiplayer boat combat game. Still a beautiful disaster in development.">
+  <meta property="og:image" content="logo.png">
+  <meta property="og:url" content="https://apmckelvey.github.io/boat-man-shooters/">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="favicon.png" sizes="1024x1024">
+  <!-- Google Analytics placeholder -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-XXXXX-X');
+  </script>
 </head>
 <body>
 
@@ -15,13 +29,23 @@
   </button>
 
   <div class="container">
+    <nav class="navbar">
+      <ul>
+        <li><a href="#how-to-play">How to Play</a></li>
+        <li><a href="#downloads">Downloads</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#timeline">Progress Timeline</a></li>
+        <li><a href="#documentation">Documentation</a></li>
+      </ul>
+    </nav>
+
     <header>
       <img class="logo" src="logo.png" alt="Boat Man Shooters Logo">
       <h1 class="main-title">Boat Man Shooters</h1>
       <p class="tagline">An online, multiplayer boat combat game. <em>(Still a beautiful disaster)</em></p>
     </header>
 
-    <section class="install-instructions">
+    <section id="how-to-play" class="install-instructions">
       <h2>How to Play (When Binaries Actually Exist)</h2>
       <div class="install-grid">
         <div class="install-card">
@@ -47,7 +71,7 @@
       </p>
     </section>
 
-    <section class="downloads">
+    <section id="downloads" class="downloads">
       <div class="card">
         <img src="windows-logo.png" alt="Windows Logo" class="os-icon">
         <h3>Windows</h3>
@@ -80,12 +104,23 @@
     </section>
 
     <h2 class="section-title">Key Features</h2>
-    <section class="features">
+    <section id="features" class="features">
       <div class="feature-card done"><h4>Online multiplayer game</h4><p>Constant lobby, real-time chaos, leaderboard that actually works.</p></div>
       <div class="feature-card wip"><h4>Account system</h4><p>Eventually you'll be able to prove you're not just "Guest_420".</p><span class="status-tag">Coming Soon</span></div>
       <div class="feature-card wip"><h4>Fluid UI interface/animations</h4><p>Looks smooth until you realize half the buttons don't do anything yet.</p><span class="status-tag">Coming Soon</span></div>
       <div class="feature-card done"><h4>Sounds and background music</h4><p>Cannons go boom. Boats go brrr. Music slaps.</p></div>
       <div class="feature-card done"><h4>Both keyboard and controller input</h4><p>Keyboard works. And yes — controller support is now fully implemented!</p></div>
+    </section>
+
+    <section id="timeline" class="timeline">
+      <h2 class="section-title">Progress Timeline</h2>
+      <div id="commit-timeline"></div>
+    </section>
+
+    <section id="documentation" class="documentation">
+      <h2 class="section-title">Documentation</h2>
+      <p>For detailed instructions, build guides, and more, check out the <a href="https://github.com/apmckelvey/boat-man-shooters/blob/main/README.md" target="_blank">README.md</a> on GitHub.</p>
+      <p>Contribute to the project or report issues directly on the <a href="https://github.com/apmckelvey/boat-man-shooters" target="_blank">repository</a>.</p>
     </section>
 
     <footer>
@@ -98,8 +133,9 @@
         </a>
       </p>
       <p>
-        <a href="https://github.com/apmckelvey/boat-man-shooters" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub</a> • Wave
+        <a href="https://github.com/apmckelvey/boat-man-shooters" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub</a> •
       </p>
+      <p>Security: We use Supabase for backend services. For privacy details, see <a href="https://supabase.com/privacy" target="_blank" style="color:var(--accent);text-decoration:none;">Supabase Privacy Policy</a>.</p>
     </footer>
   </div>
 
