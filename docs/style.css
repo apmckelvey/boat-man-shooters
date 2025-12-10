@@ -66,7 +66,7 @@ html[data-theme="light"] .os-icon-linux{filter:invert(1) brightness(1.1)}
 .dl-source:hover{background:#1c88e8}
 .mt-2{margin-top:8px}
 
-.section-title{font-size:2rem;color:var(--accent);text-align:center;margin:80px 0 30px}
+.section-title{font-family:"DynaPuff",system-ui,sans-serif;font-size:2rem;color:var(--accent);text-align:center;margin:80px 0 30px}
 .features{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));padding-bottom:60px}
 .feature-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:25px;transition:all .3s;box-shadow:0 4px 10px rgba(0,0,0,.2);position:relative;overflow:hidden}
 .feature-card:hover{border-color:var(--accent);transform:translateY(-5px);box-shadow:var(--shadow)}
