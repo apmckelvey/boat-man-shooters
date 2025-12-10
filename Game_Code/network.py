@@ -21,7 +21,7 @@ class NetworkManager:
         self.consecutive_failures = 0
 
         self.supabase = None
-        self._attempt_connection()  # This should now work
+        self._attempt_connection()
         Thread(target=self._network_loop, daemon=True).start()
         Thread(target=self._cannonball_loop, daemon=True).start()
         print("Network threads started")
@@ -136,8 +136,8 @@ class NetworkManager:
 
                 # Fetch new cannonballs every 100ms
                 if now - last_fetch >= 0.1:
-                    # Get cannonballs created in the last second
-                    cutoff = now - 1.0
+                    # Get cannonballs created in the last 1.5 seconds (buffer for network latency)
+                    cutoff = now - 1.5
                     resp = self.supabase.table("cannonballs") \
                         .select("*") \
                         .gt("created_at", f"{cutoff:.3f}") \
@@ -145,21 +145,38 @@ class NetworkManager:
                         .execute()
 
                     if hasattr(resp, 'data'):
+                        new_cannonballs = {}
                         for cb_data in resp.data:
                             cb_id = cb_data.get("id")
                             if cb_id not in self.remote_cannonballs:
                                 # Create new remote cannonball
                                 from cannonball import CannonBall
                                 try:
+                                    # Calculate age of cannonball
+                                    created_at = float(cb_data.get("created_at", now))
+                                    age = now - created_at
+
+                                    # Skip if too old
+                                    if age > 5.0:  # Skip cannonballs older than lifetime
+                                        continue
+
                                     cannonball = CannonBall.from_dict(cb_data)
-                                    self.remote_cannonballs[cb_id] = {
+                                    # Set initial age based on when it was created
+                                    cannonball.age = age
+
+                                    new_cannonballs[cb_id] = {
                                         "cannonball": cannonball,
-                                        "created_at": now,
-                                        "player_id": cb_data.get("player_id")
+                                        "created_at": created_at,
+                                        "player_id": cb_data.get("player_id"),
+                                        "received_at": now
                                     }
-                                    print(f"New remote cannonball from {cb_data.get('player_id', 'unknown')}")
+                                    print(
+                                        f"New remote cannonball from {cb_data.get('player_id', 'unknown')} (age: {age:.2f}s)")
                                 except Exception as e:
                                     print(f"Error creating remote cannonball: {e}")
+
+                        # Update dictionary with new cannonballs
+                        self.remote_cannonballs.update(new_cannonballs)
 
                     last_fetch = now
 
@@ -172,6 +189,13 @@ class NetworkManager:
 
                 for cb_id in to_remove:
                     del self.remote_cannonballs[cb_id]
+
+                # Update existing cannonballs
+                for cb_info in self.remote_cannonballs.values():
+                    cb = cb_info["cannonball"]
+                    if cb.age < cb.lifetime:
+                        # Update age based on real time
+                        cb.age = now - cb_info["created_at"]
 
                 time.sleep(0.01)
 
@@ -268,5 +292,4 @@ class NetworkManager:
                 self.supabase.table("cannonballs").delete().eq("player_id", self.PLAYER_ID).execute()
             except Exception:
                 pass
-
 

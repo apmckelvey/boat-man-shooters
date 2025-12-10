@@ -92,14 +92,15 @@ async def main():
         nonlocal loading_game
         loading_game = value
 
-    # initialize menu buttons
+    # initialize menu buttons - positioned to fit within the dark menu panel
+    # plz fix y'all
     menu_buttons = [
         ButtonSubmit(
             x=WIDTH // 2,
             y=int(HEIGHT * 0.45),
             unpressed_path='../Graphics/UI Interface/Buttons/Join Game Button/join-game-button-unpressed.png',
             pressed_path='../Graphics/UI Interface/Buttons/Join Game Button/join-game-button-pressed.png',
-            scale=0.40,
+            scale=0.32,
             action=lambda: set_loading_game(True)
         ),
         ButtonSubmit(
@@ -107,7 +108,7 @@ async def main():
             y=int(HEIGHT * 0.58),
             unpressed_path='../Graphics/UI Interface/Buttons/Settings Button/settings-button-unpressed.png',
             pressed_path='../Graphics/UI Interface/Buttons/Settings Button/settings-button-pressed.png',
-            scale=0.40,
+            scale=0.32,
             action=open_settings_action
         )
     ]
@@ -137,6 +138,7 @@ async def main():
             if event.type == pygame.JOYAXISMOTION and controller_joystick:
                 global lt_rest, rt_rest
                 if lt_rest is None or rt_rest is None:
+                    # calibration
                     try:
                         lt_rest = controller_joystick.get_axis(4)
                         rt_rest = controller_joystick.get_axis(5)
@@ -196,6 +198,7 @@ async def main():
             # keyboard fallback cannons
             if event.type == pygame.KEYDOWN and game_state == "GAME":
                 if event.key == pygame.K_q and L_Can_fire:
+                    # Create local cannonball
                     new_ball = CannonBall(player.x, player.y, player.rotation, "left")
                     cannon_balls.append(new_ball)
                     cannon_sound.play()
@@ -209,7 +212,9 @@ async def main():
                     L_Can_fire = False
                     L_cooldown_end = current_time + cooldown
                     pygame.time.set_timer(pygame.USEREVENT + 1, int(cooldown * 1000), loops=1)
+
                 if event.key == pygame.K_e and R_Can_fire:
+                    # Create local cannonball
                     new_ball = CannonBall(player.x, player.y, player.rotation, "right")
                     cannon_balls.append(new_ball)
                     cannon_sound.play()
@@ -223,10 +228,12 @@ async def main():
                     R_Can_fire = False
                     R_cooldown_end = current_time + cooldown
                     pygame.time.set_timer(pygame.USEREVENT + 2, int(cooldown * 1000), loops=1)
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE and not escape_was_pressed:
                         inescape_menu = not inescape_menu
                         escape_was_pressed = True
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     escape_was_pressed = False
@@ -257,6 +264,7 @@ async def main():
             # Update menu buttons with events
             for button in menu_buttons:
                 button.update(events)
+            # Pass buttons to renderer so they can be drawn on the menu
             renderer.render_menu(current_time, menu_buttons)
 
         elif game_state == "GAME":
@@ -269,11 +277,14 @@ async def main():
             # update remote cannonballs
             if network:
                 remote_balls = network.get_remote_cannonballs()
+                # Update remote cannonballs
                 for ball in remote_balls:
                     ball.update(dt)
-                    # Add to display list if not already there
-                    if ball.server_id and ball.server_id not in [cb.server_id for cb in cannon_balls if cb.server_id]:
-                        cannon_balls.append(ball)
+                # Filter out duplicates and add new ones
+                for remote_ball in remote_balls:
+                    if remote_ball.server_id not in [cb.server_id for cb in cannon_balls if
+                                                     hasattr(cb, 'server_id') and cb.server_id]:
+                        cannon_balls.append(remote_ball)
 
             # items
             collision = item_manager.check_collision(player.x, player.y, player_radius=0.15)
@@ -282,10 +293,8 @@ async def main():
 
             prediction.update_predictions(dt, network.other_players)
 
-            # rendering
-            renderer.render(current_time, player, prediction.other_players_display, item_manager)
-            if cannon_balls:
-                renderer.draw_cannon_balls(cannon_balls, player)
+            # rendering - pass all cannonballs to renderer
+            renderer.render(current_time, player, prediction.other_players_display, item_manager, cannon_balls)
 
             # overlay elements
             try:
