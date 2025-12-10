@@ -18,10 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setTheme(current === 'dark' ? 'light' : 'dark');
   });
 
-  // Fetch and display commits (Fixed to per_page=3)
+  // Fetch and display commits
   fetchCommits();
-  // Fetch and display AI Summary (NEW)
-  fetchAISummary();
 });
 
 async function fetchCommits() {
@@ -29,8 +27,7 @@ async function fetchCommits() {
   if (!timeline) return;
 
   try {
-    // FIX: Request only the last 3 commits
-    const response = await fetch('https://api.github.com/repos/apmckelvey/boat-man-shooters/commits?per_page=3');
+    const response = await fetch('https://api.github.com/repos/apmckelvey/boat-man-shooters/commits?per_page=10');
     const commits = await response.json();
 
     if (!Array.isArray(commits) || commits.length === 0) {
@@ -39,8 +36,6 @@ async function fetchCommits() {
     }
 
     const ul = document.createElement('ul');
-
-    // Display the commits
     commits.forEach(commit => {
       const li = document.createElement('li');
       const date = new Date(commit.commit.author.date).toLocaleDateString();
@@ -55,27 +50,5 @@ async function fetchCommits() {
   } catch (error) {
     console.error('Error fetching commits:', error);
     timeline.innerHTML = '<p>Failed to load commit history.</p>';
-  }
-}
-
-// NEW FUNCTION: Fetches the AI-generated summary from the docs/data folder
-async function fetchAISummary() {
-  const aiCard = document.getElementById('ai-insight');
-  const aiText = document.getElementById('ai-text');
-
-  // Path is relative to index.html in the docs/ folder
-  try {
-    const response = await fetch('data/ai_summary.json');
-
-    if (!response.ok) throw new Error('No AI summary found');
-
-    const data = await response.json();
-    aiText.textContent = `"${data.summary}"`;
-    aiCard.style.display = 'block';
-
-  } catch (error) {
-    console.warn('AI Summary file not available yet (check GitHub Actions for run status):', error);
-    // Hide the card if no data exists yet
-    aiCard.style.display = 'none';
   }
 }
