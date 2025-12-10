@@ -23,50 +23,96 @@
 </head>
 <body>
 
-  <button id="theme-toggle" aria-label="Toggle theme">
-    <img id="theme-icon" src="sun.png" alt="Theme icon" width="32" height="32">
+  <button id="theme-toggle" type="button" aria-label="Toggle dark/light mode">
+    <img id="theme-icon" src="sun.png" alt="Light Mode" width="40" height="40">
   </button>
 
-  <main>
+  <div class="container">
+    <nav class="navbar">
+      <ul>
+        <li><a href="#how-to-play">How to Play</a></li>
+        <li><a href="#downloads">Downloads</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#timeline">Progress Timeline</a></li>
+        <li><a href="#documentation">Documentation</a></li>
+      </ul>
+    </nav>
+
     <header>
-      <div class="logo-container">
-        <img src="logo.jpg" alt="Boat Man Shooters Logo" class="logo">
-      </div>
-      <h1>Boat Man Shooters</h1>
-      <p class="tagline">An online, multiplayer boat combat game. Still a beautiful disaster in development.</p>
+      <img class="logo" src="logo.jpg" alt="Boat Man Shooters Logo">
+      <h1 class="main-title">Boat Man Shooters</h1>
+      <p class="tagline">An online, multiplayer boat combat game. <em>(Still a beautiful disaster)</em></p>
     </header>
 
-    <section id="downloads" class="downloads">
-      <h2 class="section-title">Download & Play</h2>
-      <div class="download-list">
-        <a href="#" class="download-link" aria-label="Download for Windows">
-          <img src="windows-logo.png" alt="Windows" width="48" height="48">
-          <span class="label">Windows</span>
-        </a>
-        <a href="#" class="download-link" aria-label="Download for macOS">
-          <img src="macos-logo.png" alt="macOS" width="48" height="48">
-          <span class="label">macOS</span>
-        </a>
-        <a href="#" class="download-link" aria-label="Download for Linux">
-          <img src="linux-logo.png" alt="Linux" width="48" height="48">
-          <span class="label">Linux</span>
-        </a>
+    <section id="how-to-play" class="install-instructions">
+      <h2>How to Play (When Binaries Actually Exist)</h2>
+      <div class="install-grid">
+        <div class="install-card">
+          <img src="windows-logo.png" alt="Windows" class="install-icon">
+          <h3>Windows</h3>
+          <p>Download <code>BoatManShooters.exe</code><br>Double-click and dominate.</p>
+        </div>
+        <div class="install-card">
+          <img src="macos-logo.png" alt="macOS" class="install-icon">
+          <h3>macOS</h3>
+          <p>Download <code>BoatManShooters.zip</code><br>Unzip → move <code>BoatManShooters.app</code> to Applications → run.</p>
+        </div>
+        <div class="install-card">
+          <img src="linux-logo.png" alt="Linux" class="install-icon os-icon-linux">
+          <h3>Linux</h3>
+          <p>Download <code>BoatManShooters.AppImage</code><br><code>chmod +x BoatManShooters.AppImage</code> → run → profit.</p>
+        </div>
       </div>
-      <p class="status-note">Current build: **Alpha 0.9.1** (Last updated: Oct 2024)</p>
+      <p class="install-note">
+        <strong>Current reality:</strong> These don't exist yet.<br>
+        For now: <code>git clone</code> the repo and run <code>python main.py</code>.<br>
+        <em>Yes, you need Python. Yes, it's worth it.</em>
+      </p>
     </section>
 
-    <section id="features" class="features">
-      <h2 class="section-title">Key Features</h2>
-      <div class="feature-grid">
-        <div><h4><span class="wave">🌊</span> Real-Time Chaos</h4><p>Fast-paced 2D boat battles powered by a dedicated Python server.</p></div>
-        <div><h4><span class="wave">🚢</span> Custom Boats</h4><p>Choose from a variety of ship classes, from speedboats to slow, armored dreadnoughts.</p></div>
-        <div><h4><span class="wave">🎯</span> Weapon Systems</h4><p>Cannons, mines, and customizable projectile types for ultimate destruction.</p></div>
-        <div><h4><span class="wave">🕹️</span> Controller Input</h4><p>Keyboard works. And yes — controller support is now fully implemented!</p></div>
+    <section id="downloads" class="downloads">
+      <div class="card">
+        <img src="windows-logo.png" alt="Windows Logo" class="os-icon">
+        <h3>Windows</h3>
+        <p class="size">Coming eventually</p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Run</a>
+        <p class="note">python main.py — you're welcome</p>
       </div>
+      <div class="card">
+        <img src="macos-logo.png" alt="macOS Logo" class="os-icon">
+        <h3>macOS</h3>
+        <p class="size">Coming eventually</p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Run</a>
+        <p class="note">brew install python && python3 main.py</p>
+      </div>
+      <div class="card">
+        <img src="linux-logo.png" alt="Linux Logo" class="os-icon os-icon-linux">
+        <h3>Linux</h3>
+        <p class="size">Coming eventually</p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters" class="dl-btn" target="_blank">Clone & Run</a>
+        <p class="note">You got this. Just don't forget pip.</p>
+      </div>
+      <div class="card source-code-card">
+        <img src="logo.jpg" alt="Source Code Logo" class="os-icon source-icon-circle">
+        <h3>Source Code</h3>
+        <p class="size">Available now</p>
+        <a href="https://github.com/apmckelvey/boat-man-shooters/archive/refs/heads/main.zip" class="dl-btn dl-source" target="_blank">source.zip</a>
+        <a href="https://github.com/apmckelvey/boat-man-shooters/archive/refs/heads/main.tar.gz" class="dl-btn dl-source mt-2" target="_blank">source.tar.gz</a>
+        <p class="note">You know you want to fix my bugs!</p>
+      </div>
+    </section>
+
+    <h2 class="section-title">Key Features</h2>
+    <section id="features" class="features">
+      <div class="feature-card done"><h4>Online multiplayer game</h4><p>Constant lobby, real-time chaos, leaderboard that actually works.</p></div>
+      <div class="feature-card wip"><h4>Account system</h4><p>Eventually you'll be able to prove you're not just "Guest_420".</p><span class="status-tag">Coming Soon</span></div>
+      <div class="feature-card wip"><h4>Fluid UI interface/animations</h4><p>Looks smooth until you realize half the buttons don't do anything yet.</p><span class="status-tag">Coming Soon</span></div>
+      <div class="feature-card done"><h4>Sounds and background music</h4><p>Cannons go boom. Boats go brrr. Music slaps.</p></div>
+      <div class="feature-card done"><h4>Both keyboard and controller input</h4><p>Keyboard works. And yes — controller support is now fully implemented!</p></div>
     </section>
 
     <section id="timeline" class="timeline">
-      <h2 class="section-title">Latest Updates</h2>
+      <h2 class="section-title">Progress Timeline</h2>
 
       <div class="build-status">
         <a href="https://github.com/apmckelvey/boat-man-shooters/actions" target="_blank">
@@ -103,9 +149,9 @@
       <p>
         <a href="https://github.com/apmckelvey/boat-man-shooters" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub</a> •
       </p>
-      <p>Security: We use Supabase for backend services. For privacy details, see <a href="https://supabase.com/privacy" target="_blank" style="color:var(--accent);text-decoration:none;">Supabase Privacy</a>.</p>
+      <p>Security: We use Supabase for backend services. For privacy details, see <a href="https://supabase.com/privacy" target="_blank" style="color:var(--accent);text-decoration:none;">Supabase Privacy Policy</a>.</p>
     </footer>
-  </main>
+  </div>
 
   <script src="main.js"></script>
 </body>

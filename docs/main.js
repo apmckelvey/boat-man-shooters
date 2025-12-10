@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTheme(current === 'dark' ? 'light' : 'dark');
   });
 
-  // Fetch and display commits (MODIFIED)
+  // Fetch and display commits (Fixed to per_page=3)
   fetchCommits();
   // Fetch and display AI Summary (NEW)
   fetchAISummary();
@@ -29,7 +29,7 @@ async function fetchCommits() {
   if (!timeline) return;
 
   try {
-    // FIX: Request exactly 3 commits to respect the requirement
+    // FIX: Request only the last 3 commits
     const response = await fetch('https://api.github.com/repos/apmckelvey/boat-man-shooters/commits?per_page=3');
     const commits = await response.json();
 
@@ -43,7 +43,6 @@ async function fetchCommits() {
     // Display the commits
     commits.forEach(commit => {
       const li = document.createElement('li');
-      // Ensure we use the author's commit date/name, not committer's (GitHub sometimes changes committer for merges)
       const date = new Date(commit.commit.author.date).toLocaleDateString();
       li.innerHTML = `
         <span class="date">${date}:</span>

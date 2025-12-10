@@ -9,7 +9,6 @@ def get_git_changes():
     """Gets the last 3 commit messages."""
     try:
         # Get last 3 commits
-        # Note: We fetch from the local repository copy checked out by the Action.
         return subprocess.check_output(
             ["git", "log", "-n", "3", "--pretty=format:%s"], text=True
         )
@@ -26,7 +25,6 @@ def generate_update():
     if api_key:
         try:
             genai.configure(api_key=api_key)
-            # Use the faster, cost-effective model for summaries
             model = genai.GenerativeModel('gemini-1.5-flash')
 
             prompt = f"""
