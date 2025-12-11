@@ -14,6 +14,7 @@ from shaders import vertex_shader, fragment_shader, overlay_fragment, overlay_ve
 class Renderer:
     def __init__(self, ctx):
         self.menu_boolean = False
+        self.cancel_button = False
         self.ctx = ctx
         self.viewport_width = 2.3
         self.viewport_height = 1.3
@@ -786,7 +787,7 @@ class Renderer:
                     word = list_of_buttons[i]
                     shadow_surf, _ = self.setting_font.render(list_of_buttons[i], (0, 0, 0))
                     shadow_rect = shadow_surf.get_rect(center=(xcor // 2 + 2, ycor // 2 + i * 60 - 62))
-                    box_rect = pygame.draw.rect(surf, (255, 255, 255, 100), shadow_rect, 2)
+                    box_rect = pygame.draw.rect(surf, (255, 255, 255, 0), shadow_rect, 2)
                     surf.blit(shadow_surf, shadow_rect)
                     label_surf, _ = self.setting_font.render(list_of_buttons[i], (255, 255, 255))
                     label_rect = label_surf.get_rect(center=(xcor // 2, ycor // 2 + i * 60 - 60))
@@ -809,6 +810,14 @@ class Renderer:
                     elif word == "Main Menu" and self.menu_boolean is False:
                         self.game_state = "MENU"
                         self.menu_boolean = True
+                    elif word == "Settings":
+                        print("Settings")
+                    elif word == "Cancel":
+                        self.cancel_button = True
+
+
+
+
 
         data = pygame.image.tobytes(surf, 'RGBA', True)
         w, h = surf.get_size()
