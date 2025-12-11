@@ -102,7 +102,7 @@ This structure ensures loose coupling: rendering changes don't affect physics, a
 
 ## Installation of Dependencies <a name="installation_of_dependencies">
 
-This project uses the dependencies `pygame-ce`, `moderngl`, `numpy`, and `supabase`, which are not built in to the Python system. To install these dependencies, you will have to use pip in your terminal if you are in a local environment.
+This project uses the dependencies `pygame-ce`, `asyncio`, `imageio`, `moderngl`, `numpy`, and `supabase`, which are not built in to the Python system. To install these dependencies, you will have to use pip in your terminal if you are in a local environment.
 
 > ***NOTE: If you are running in an app, you will not need to install these dependencies. Please proceed to section 3.3***
 
@@ -154,13 +154,13 @@ pip3 install pygame-ce
 Run the following commands in your terminal to install the rest of the dependencies using `pip`.
 
 ```Bash
-pip install supabase moderngl numpy
+pip install supabase moderngl numpy asyncio imageio
 ```
 
 If that did not work, you can alternatively try the following command:
 
 ```Bash
-pip3 install supabase moderngl numpy
+pip3 install supabase moderngl numpy asyncio imageio
 ```
 
 > ***NOTE:*** These directions are assuming you are running Python verison 3 or higher.
