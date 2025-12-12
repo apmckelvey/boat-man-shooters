@@ -136,31 +136,24 @@ pip3 uninstall pygame
 >
 > We decided to use `pygame-ce`, the community fork of pygame, because of its continuous updates and security fixes. It also helps our game work faster than the original. Codewise, it's very similar; you can just call `import pygame` just like the original!
 
-You may now install `pygame-ce`:
+You may now install the dependencies:
 
+- `cd` into repository folder:
 ```Bash
-pip install pygame-ce
+cd /Directory/to/repository
+```
+
+> *NOTE:* Replace `"/Directory/to/repository"` with the actual directory to the repository.
+
+- Install dependencies:
+```Bash
+pip install -r requirements.txt
 ```
 
 If that did not work, you can alternatively try the following command:
 
 ```Bash
-pip3 install pygame-ce
-```
-
-> ***NOTE:*** These directions are assuming you are running Python verison 3 or higher.
-
-4. ### Get Other Dependencies
-Run the following commands in your terminal to install the rest of the dependencies using `pip`.
-
-```Bash
-pip install supabase moderngl numpy asyncio imageio
-```
-
-If that did not work, you can alternatively try the following command:
-
-```Bash
-pip3 install supabase moderngl numpy asyncio imageio
+pip3 install -r requirements.txt
 ```
 
 > ***NOTE:*** These directions are assuming you are running Python verison 3 or higher.
@@ -195,7 +188,7 @@ Download the app for your desired operating system:
 **Website:** [https://apmckelvey.github.io/boat-man-shooters/](https://apmckelvey.github.io/boat-man-shooters/)  
 **Releases Page:** [https://github.com/apmckelvey/boat-man-shooters/releases](https://github.com/apmckelvey/boat-man-shooters/releases)    
 
-### Option 2: Build-it-Yoursef (macOS) From the Code  
+### Option 2: Build-it-Yoursef (macOS ONLY) From the Code  
 
 1. Install the dependencies as described in section 3.1 as well as the dependency `nuitka`:
 
