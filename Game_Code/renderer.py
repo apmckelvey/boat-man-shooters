@@ -273,7 +273,7 @@ class Renderer:
         self._overlay_surf.fill((0, 0, 0, 0))
         return self._overlay_surf
 
-    def render(self, time, player, other_players_display, item_manager=None):
+    def render(self, time, player, other_players_display, item_manager=None, cannon_balls=None):
         from config import WORLD_WIDTH, WORLD_HEIGHT
 
         self.program['time'].value = float(time)
@@ -357,25 +357,9 @@ class Renderer:
         self.ctx.clear(0.0, 0.35, 0.75)
         self.vao.render(mode=moderngl.TRIANGLE_STRIP)
 
-        if item_manager:
-            visible_items = item_manager.get_visible_items(
-                player.camera_x,
-                player.camera_y,
-                visible_radius=5.0
-            )
-
-            for item in visible_items:
-                screen_x, screen_y = self.world_to_screen(
-                    item.x, item.y,
-                    player.camera_x, player.camera_y,
-                    WIDTH, HEIGHT
-                )
-
-                if item.image:
-                    img_width, img_height = item.image.get_size()
-                    scale_factor = 80
-                    draw_x = int(screen_x - img_width * scale_factor / (2 * img_width))
-                    draw_y = int(screen_y - img_height * scale_factor / (2 * img_height))
+        # Draw cannonballs if provided
+        if cannon_balls:
+            self.draw_cannon_balls(cannon_balls, player)
 
     def draw_minimap(self, player, other_players_display):
         try:
