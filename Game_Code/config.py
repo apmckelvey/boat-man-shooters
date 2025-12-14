@@ -15,7 +15,7 @@ WORLD_WIDTH = 15
 WORLD_HEIGHT = 15
 
 SUPABASE_URL = "https://ciuqcdaowlwztlzkanpq.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpdXFjZGFvd2x3enRsemthbnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MTYxMjUsImV4cCI6MjA3NzQ5MjEyNX0.WdoFmiZTRZbkTlnNISPTbkcDTFWDv75QEFsKNs7zkeY"
+SUPABASE_KEY = "sb_publishable_R8sevzo6mu8PBPNaQZSmOg_KKzoqAVR"
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise RuntimeError(
