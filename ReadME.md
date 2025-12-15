@@ -36,6 +36,10 @@ This is an online multiple player game where the intention is to shoot other boa
 
 ## Features <a name="features"></a>
 
+### Game Layout
+<img src="Documentation Pictures/Features.png" alt="Game Logic Flowchart">
+
+### Game Elements
 - [X] Online multiplayer game
 - [ ] Account system
 - [ ] Fluid UI interface/animations
@@ -69,7 +73,7 @@ This is an online multiple player game where the intention is to shoot other boa
 ```
 
 ## Logic <a name="logic"></a>
-<img src="Game Logic Flowchart.png" alt="Game Logic Flowchart">
+<img src="Documentation Pictures/Game Logic Flowchart.png" alt="Game Logic Flowchart">
 
 ## Code <a name="code"></a>
 
