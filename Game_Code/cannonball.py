@@ -2,11 +2,42 @@ import pygame
 import math
 import time
 from datetime import datetime
+import os
+import sys
 
 
 class CannonBall:
     #cache a single base image to avoid disk I/O on every shot
     _base_image = None
+    _enemy_image = None
+    _logged_enemy_image = False
+
+    @staticmethod
+    def _resolve_asset_path(rel_path: str) -> str:
+        """Resolve assets reliably in dev and packaged builds."""
+        try:
+            if sys.platform == 'darwin' and 'Contents/MacOS' in sys.argv[0]:
+                base_dir = os.path.join(os.path.dirname(sys.argv[0]), '..', 'Resources')
+            else:
+                base_dir = os.path.dirname(sys.argv[0])
+            return os.path.normpath(os.path.join(base_dir, rel_path))
+        except Exception:
+            # Fallback to relative path as-is
+            return rel_path
+
+    @classmethod
+    def _safe_load_image(cls, rel_path: str):
+        """Load an image without requiring a display mode (avoid convert_alpha before init)."""
+        path = cls._resolve_asset_path(rel_path)
+        img = pygame.image.load(path)
+        try:
+            # Only convert if a display surface exists to avoid failures in background threads
+            if pygame.display.get_init() and pygame.display.get_surface() is not None:
+                img = img.convert_alpha()
+        except Exception:
+            # keep unconverted surface
+            pass
+        return img
 
     @classmethod
     def _get_base_image(cls):
@@ -14,7 +45,7 @@ class CannonBall:
         #returns a Surface that callers should .copy() before mutating (alpha, etc.).
         if cls._base_image is None:
             try:
-                img = pygame.image.load("../Graphics/Sprites/Cannonballs/cannonball.png").convert_alpha()
+                img = cls._safe_load_image('../Graphics/Sprites/Cannonballs/cannonball.png')
                 cls._base_image = pygame.transform.scale(img, (32, 32))
             except Exception:
                 #fallback simple circle if asset not found
@@ -22,6 +53,37 @@ class CannonBall:
                 pygame.draw.circle(surf, (200, 200, 200), (16, 16), 16)
                 cls._base_image = surf
         return cls._base_image
+
+    @classmethod
+    def _get_enemy_image(cls):
+        #load and cache the red (enemy) cannonball image ONCE
+        if cls._enemy_image is None:
+            try:
+                img = cls._safe_load_image('../Graphics/Sprites/Cannonballs/cannonball-enemy.png')
+                cls._enemy_image = pygame.transform.scale(img, (32, 32))
+                if not cls._logged_enemy_image:
+                    try:
+                        print("✅ Loaded enemy cannonball sprite")
+                    except Exception:
+                        pass
+                    cls._logged_enemy_image = True
+            except Exception:
+                #fallback to base image colorized red-ish
+                base = cls._get_base_image().copy()
+                try:
+                    tint = pygame.Surface(base.get_size(), pygame.SRCALPHA)
+                    tint.fill((255, 60, 60, 120))
+                    base.blit(tint, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+                    cls._enemy_image = base
+                except Exception:
+                    cls._enemy_image = base
+                if not cls._logged_enemy_image:
+                    try:
+                        print("⚠️  Enemy cannonball sprite missing; using red-tinted base")
+                    except Exception:
+                        pass
+                    cls._logged_enemy_image = True
+        return cls._enemy_image
 
     def __init__(self, x, y, rotation, side, velocity_x=None, velocity_y=None, server_id=None, created_at=None,
                  is_remote=False):
@@ -51,8 +113,12 @@ class CannonBall:
         # Calculate initial age
         self.age = time.time() - self.created_at
 
-        #use cached image and keep a per-instance copy for alpha adjustments
-        self.image = self._get_base_image().copy()
+        # use cached image and keep a per-instance copy for alpha adjustments
+        # remote (enemy) cannonballs use the red enemy image
+        if is_remote:
+            self.image = self._get_enemy_image().copy()
+        else:
+            self.image = self._get_base_image().copy()
 
         offset_distance = 0.18
         angle_offset = 1.5 if side == "left" else -1.5
